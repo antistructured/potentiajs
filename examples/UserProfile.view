@@ -1,0 +1,13 @@
+view UserProfile {
+  props: { userId: string }
+
+  state: {
+    user = fetchUser(userId)
+  }
+
+  html:
+    <div>
+      <h1>{user.name}</h1>
+      <p>{user.email}</p>
+    </div>
+}

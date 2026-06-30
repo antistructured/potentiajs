@@ -1,0 +1,9 @@
+{
+  "name": "potentia-js",
+  "module": "index.js",
+  "version": "0.0.1",
+  "description": "A JavaScript library for anti-structured programming.",
+  "private": true,
+  "devDependencies": {},
+  "peerDependencies": {}
+}
