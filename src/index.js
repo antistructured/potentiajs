@@ -1,8 +1,12 @@
 export { createApp } from './kernel/app.js';
+export { action } from './kernel/action.js';
+export { projectAction } from './kernel/action-projection.js';
 export { createRequestContext } from './kernel/context.js';
 export { projectContract } from './kernel/contract-projection.js';
 export { createFrameworkError, normalizeFrameworkError } from './kernel/error.js';
 export { call, context, effect, runEffect, value } from './kernel/effect.js';
+export { projectForm } from './kernel/form-projection.js';
+export { createFormState } from './kernel/form-state.js';
 export { createPlugin } from './kernel/plugin.js';
 export { fail, ok } from './kernel/result.js';
 export { createRouteManifest } from './kernel/route-manifest.js';

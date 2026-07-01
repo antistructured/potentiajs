@@ -152,6 +152,44 @@ const manifest = createRouteManifest(app, { packageName: 'potentia-js', packageV
 
 Route metadata is experimental. Routes may include optional `name`, `meta`, and `source` options for manifest/tooling descriptions. `createRouteManifest()` creates a deterministic route manifest with route IDs, names, contracts, hook counts, source/meta, diagnostics, and lookup tables. Manifest creation does not execute handlers, hooks, or contracts; it is a foundation for future docs, tests, clients, forms/actions, and dev tooling, not a completed generator.
 
+## Actions
+
+Actions are experimental server-side contract boundaries. They support JSON input and `application/x-www-form-urlencoded` input. Parsed and validated action input is attached to `ctx.input`, handlers may use plain/async/effect execution, and output contracts validate the logical response body before route response projection.
+
+```js
+import { action, call, effect, json, ok, route } from 'potentia-js';
+
+const createUser = action('users.create', effect(function* createUser(ctx) {
+  const user = yield call(insertUser, ctx.input);
+  return ok(json(user));
+}), {
+  input: CreateUserInput,
+  output: CreateUserOutput
+});
+
+route('POST', '/users', createUser);
+```
+
+URL-encoded submissions parse into plain objects. Repeated fields become arrays, empty values stay empty strings, and values remain strings until input contracts transform them.
+
+Actions return normal Potentia results and responses. Use `ok(...)` for success, `fail(...)` for intentional domain failures, and `redirect(...)` for explicit post-action redirects. Validation failures are deterministic and safe: action input failures return `ok: false`, an action error code, boundary metadata, and an issues array.
+
+Server validation remains authoritative. Form generation, multipart/file uploads, frontend runtime, client SDK, and OpenAPI generation remain deferred. Future client-side validation will be projection-only convenience.
+
+`createFormState(...)` is an experimental opt-in helper for failed form submissions. It preserves safe parsed values only, omits sensitive fields such as passwords/tokens/secrets, groups canonical issues by field with `_form` for root-level issues, and leaves default action behavior unchanged. Redirects remain explicit; successful form submissions should use `redirect('/path', 303)` when post-submit navigation is desired.
+
+```js
+return fail(createFormState({
+  ok: false,
+  values: ctx.input,
+  error: { code: 'USER_EMAIL_TAKEN', message: 'Email is already in use' }
+}), 409);
+```
+
+Potentia still does not include a form generator, frontend runtime, client SDK, OpenAPI generator, session/flash helper, or multipart/file upload helper.
+
+`projectForm(...)` is an experimental metadata-only helper. It projects action input contracts into renderer-independent field metadata where safe. SigilJS object contracts can expose field paths, derived labels, conservative input hints, required/optional flags, scalar-array `multiple` hints, and sensitive flags. Generic function/parse/check contracts remain opaque and do not invent fields. Server validation remains authoritative. Potentia still does not include a form renderer, HTML generator, frontend runtime, client SDK, or OpenAPI generator.
+
 ## Hooks
 
 Apps, route collections, and mounts can define lifecycle hooks:
@@ -187,18 +225,33 @@ Handlers usually return `ok(value)` or `fail(error)`. Response helpers create de
 return ok(json({ ok: true }));
 ```
 
-Safe error body example:
+Safe contract failure body example:
 
 ```js
 {
+  ok: false,
   error: {
     code: 'POTENTIA_CONTRACT_FAILED',
     message: 'Request body failed contract validation',
     boundary: 'body',
-    issues: [{ message: 'SigilJS contract rejected value' }]
-  }
+    issues: [{
+      code: 'invalid_type',
+      message: 'SigilJS contract rejected value',
+      path: ['email'],
+      field: 'email',
+      boundary: 'body',
+      source: 'sigil',
+      expected: 'string',
+      received: 'number',
+      meta: null
+    }]
+  },
+  boundary: 'body',
+  issues: [/* same issue objects */]
 }
 ```
+
+Contract failures now expose normalized issue metadata across route and action boundaries. SigilJS can provide field-level `path` / `field` issues where structured metadata is available. Generic contracts remain opaque and use root-level issues (`path: []`, `field: null`). Raw input values are not exposed; `received` uses safe type descriptors such as `string`, `number`, `array`, or `object`. These diagnostics support future forms/tooling, but Potentia still does not include a form generator, client SDK, or OpenAPI generator.
 
 Unsafe thrown handler errors return `POTENTIA_HANDLER_FAILED` with `Internal server error`.
 
@@ -207,6 +260,8 @@ Unsafe thrown handler errors return `POTENTIA_HANDLER_FAILED` with `Internal ser
 - [`examples/kernel-basic/`](examples/kernel-basic/) — generic contract kernel smoke app.
 - [`examples/sigiljs-basic/`](examples/sigiljs-basic/) — focused SigilJS contract smoke app.
 - [`examples/composed-basic/`](examples/composed-basic/) — explicit route composition smoke app.
+- [`examples/action-basic/`](examples/action-basic/) — experimental JSON and URL-encoded action smoke app.
+- [`examples/form-state-basic/`](examples/form-state-basic/) — opt-in safe form state helper smoke app.
 
 Each example exports `app` for smoke tests and only starts `Bun.serve()` when run directly.
 
@@ -232,13 +287,15 @@ Deferred intentionally:
 - nested layout routing
 - frontend rendering and hydration
 - client router
-- server actions/RPC
+- stable server actions/RPC
 - full middleware ecosystem
 - large plugin ecosystem
 - async plugin loading/discovery
 - advanced effect workflows/concurrency/retries/cancellation
 - field-level verbose contract diagnostics
 - OpenAPI/JSON Schema/TypeScript/route docs/client/forms generators
+- multipart/file uploads and form generation
+- session/flash form state persistence
 - route manifest file writing/loading
 - streaming/file responses/content negotiation/cookies API
 - CLI expansion
@@ -252,11 +309,11 @@ Deferred intentionally:
 
 All exports are experimental:
 
-- app/routes: `createApp`, `route`, `createRoutes`, `mount`, `composeRoutes`
+- app/routes/actions/forms: `createApp`, `route`, `action`, `createFormState`, `createRoutes`, `mount`, `composeRoutes`
 - results/responses: `ok`, `fail`, `json`, `text`, `redirect`, `toResponse`
 - effects: `effect`, `call`, `value`, `context`, `runEffect`
 - errors: `createFrameworkError`, `normalizeFrameworkError`
-- contracts/projection/manifest/plugins/context: `projectContract`, `projectRoute`, `projectRoutes`, `createRouteManifest`, `createPlugin`, `createRequestContext`
+- contracts/projection/manifest/plugins/context: `projectContract`, `projectAction`, `projectForm`, `projectRoute`, `projectRoutes`, `createRouteManifest`, `createPlugin`, `createRequestContext`
 
 Lower-level exports such as `createRequestContext`, `runEffect`, `normalizeFrameworkError`, and `toResponse` may be hidden or reshaped before any stable API commitment.
 
@@ -269,4 +326,4 @@ Before a public registry preview:
 - repository/bugs/homepage metadata are not set
 - no Git repository was detected in this checkout
 - no public API is stable
-- fresh install-from-packed-artifact smoke is still deferred
+- packed-artifact install smoke passes locally; publish-prep release smoke still needs a human-confirmed publish target

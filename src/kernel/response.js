@@ -52,7 +52,21 @@ export function toResponse(value) {
 
 export function errorResponse(error) {
   const normalized = normalizeError(error);
-  const body = {
+
+  if (normalized.details && typeof normalized.details === 'object' && normalized.details.kind === 'form') {
+    return descriptorToResponse(json(normalized.details, { status: normalized.status }));
+  }
+
+  const diagnosticShaped = hasDiagnosticDetails(normalized) || isActionOrDomainCode(normalized.code);
+  const body = diagnosticShaped ? {
+    ok: false,
+    error: {
+      code: normalized.code,
+      message: normalized.message
+    },
+    boundary: null,
+    issues: []
+  } : {
     error: {
       code: normalized.code,
       message: normalized.message
@@ -61,16 +75,24 @@ export function errorResponse(error) {
 
   if (normalized.details && typeof normalized.details === 'object') {
     if (typeof normalized.details.boundary === 'string') {
+      if (diagnosticShaped) body.boundary = normalized.details.boundary;
       body.error.boundary = normalized.details.boundary;
     }
     if (Array.isArray(normalized.details.issues)) {
+      if (diagnosticShaped) body.issues = normalized.details.issues;
       body.error.issues = normalized.details.issues;
     }
   }
 
-  return descriptorToResponse(json({
-    error: body.error
-  }, { status: normalized.status }));
+  return descriptorToResponse(json(body, { status: normalized.status }));
+}
+
+function hasDiagnosticDetails(error) {
+  return Boolean(error && error.details && typeof error.details === 'object' && (typeof error.details.boundary === 'string' || Array.isArray(error.details.issues)));
+}
+
+function isActionOrDomainCode(code) {
+  return typeof code === 'string' && (code.startsWith('POTENTIA_ACTION_') || !code.startsWith('POTENTIA_'));
 }
 
 export function internalFailure(error) {
@@ -108,6 +130,11 @@ export function replaceResponseBody(value, body) {
   }
 
   return body;
+}
+
+export function isRedirectResponse(value) {
+  if (isResult(value)) return value.ok && isRedirectResponse(value.value);
+  return isResponseDescriptor(value) && value.type === 'redirect';
 }
 
 function createResponseDescriptor(type, body, init) {

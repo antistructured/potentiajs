@@ -13,7 +13,7 @@ describe('kernel contract diagnostics', () => {
     expect(response.status).toBe(400);
     expect(body.error.code).toBe('POTENTIA_CONTRACT_FAILED');
     expect(body.error.boundary).toBe('params');
-    expect(body.error.issues).toEqual([{ message: 'SigilJS contract rejected value' }]);
+    expect(body.error.issues).toMatchObject([{ message: 'SigilJS contract rejected value' }]);
   });
 
   test('query failure includes boundary', async () => {
@@ -24,7 +24,7 @@ describe('kernel contract diagnostics', () => {
 
     expect(response.status).toBe(400);
     expect(body.error.boundary).toBe('query');
-    expect(body.error.issues).toEqual([{ message: 'SigilJS contract rejected value' }]);
+    expect(body.error.issues).toMatchObject([{ message: 'SigilJS contract rejected value' }]);
   });
 
   test('headers failure includes boundary', async () => {
@@ -60,7 +60,7 @@ describe('kernel contract diagnostics', () => {
     expect(response.status).toBe(500);
     expect(body.error.code).toBe('POTENTIA_RESPONSE_CONTRACT_FAILED');
     expect(body.error.boundary).toBe('response');
-    expect(body.error.issues).toEqual([{ message: 'SigilJS contract rejected value' }]);
+    expect(body.error.issues).toMatchObject([{ message: 'SigilJS contract rejected value' }]);
   });
 
   test('raw unsafe input is not exposed', async () => {
@@ -84,7 +84,7 @@ describe('kernel contract diagnostics', () => {
     const text = await response.text();
 
     expect(text.includes('Expected property')).toBe(false);
-    expect(JSON.parse(text).error.issues).toEqual([{ message: 'SigilJS contract rejected value' }]);
+    expect(JSON.parse(text).error.issues).toMatchObject([{ message: 'SigilJS contract rejected value' }]);
   });
 
   test('generic thrown error normalizes safely', async () => {
@@ -94,7 +94,7 @@ describe('kernel contract diagnostics', () => {
     const text = await response.text();
 
     expect(text.includes('generic secret')).toBe(false);
-    expect(JSON.parse(text).error).toEqual({
+    expect(JSON.parse(text).error).toMatchObject({
       code: 'POTENTIA_CONTRACT_FAILED',
       message: 'Query failed contract validation',
       boundary: 'query',

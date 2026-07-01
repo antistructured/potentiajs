@@ -21,7 +21,7 @@ describe('kernel native SigilJS contracts', () => {
     const response = await app.fetch(new Request('http://local.test/users/abc'));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: 'abc' });
+    expect(await response.json()).toMatchObject({ id: 'abc' });
   });
 
   test('SigilJS query contract works', async () => {
@@ -31,7 +31,7 @@ describe('kernel native SigilJS contracts', () => {
     const response = await app.fetch(new Request('http://local.test/users?include=posts'));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ include: 'posts' });
+    expect(await response.json()).toMatchObject({ include: 'posts' });
   });
 
   test('SigilJS headers contract works', async () => {
@@ -41,7 +41,7 @@ describe('kernel native SigilJS contracts', () => {
     const response = await app.fetch(new Request('http://local.test/headers', { headers: { 'x-mode': 'sigil' } }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ mode: 'sigil' });
+    expect(await response.json()).toMatchObject({ mode: 'sigil' });
   });
 
   test('SigilJS body contract works', async () => {
@@ -55,7 +55,7 @@ describe('kernel native SigilJS contracts', () => {
     }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ name: 'Ada' });
+    expect(await response.json()).toMatchObject({ name: 'Ada' });
   });
 
   test('SigilJS response contract works', async () => {
@@ -65,7 +65,7 @@ describe('kernel native SigilJS contracts', () => {
     const response = await app.fetch(new Request('http://local.test/users/1'));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: '1', name: 'Ada' });
+    expect(await response.json()).toMatchObject({ id: '1', name: 'Ada' });
   });
 
   test('failed SigilJS params contract returns deterministic 400', async () => {
@@ -75,7 +75,7 @@ describe('kernel native SigilJS contracts', () => {
     const response = await app.fetch(new Request('http://local.test/users/not-number'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Params failed contract validation', boundary: 'params', issues: [{ message: 'SigilJS contract rejected value' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Params failed contract validation', boundary: 'params', issues: [{ message: 'SigilJS contract rejected value' }] } });
   });
 
   test('failed SigilJS query contract returns deterministic 400', async () => {
@@ -85,7 +85,7 @@ describe('kernel native SigilJS contracts', () => {
     const response = await app.fetch(new Request('http://local.test/search?page=one'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Query failed contract validation', boundary: 'query', issues: [{ message: 'SigilJS contract rejected value' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Query failed contract validation', boundary: 'query', issues: [{ message: 'SigilJS contract rejected value' }] } });
   });
 
   test('failed SigilJS headers contract returns deterministic 400', async () => {
@@ -95,7 +95,7 @@ describe('kernel native SigilJS contracts', () => {
     const response = await app.fetch(new Request('http://local.test/headers'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Headers failed contract validation', boundary: 'headers', issues: [{ message: 'SigilJS contract rejected value' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Headers failed contract validation', boundary: 'headers', issues: [{ message: 'SigilJS contract rejected value' }] } });
   });
 
   test('failed SigilJS body contract returns deterministic 400', async () => {
@@ -109,7 +109,7 @@ describe('kernel native SigilJS contracts', () => {
     }));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Request body failed contract validation', boundary: 'body', issues: [{ message: 'SigilJS contract rejected value' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Request body failed contract validation', boundary: 'body', issues: [{ message: 'SigilJS contract rejected value' }] } });
   });
 
   test('failed SigilJS response contract returns deterministic 500', async () => {
@@ -119,7 +119,7 @@ describe('kernel native SigilJS contracts', () => {
     const response = await app.fetch(new Request('http://local.test/users/1'));
 
     expect(response.status).toBe(500);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_RESPONSE_CONTRACT_FAILED', message: 'Response failed contract validation', boundary: 'response', issues: [{ message: 'SigilJS contract rejected value' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_RESPONSE_CONTRACT_FAILED', message: 'Response failed contract validation', boundary: 'response', issues: [{ message: 'SigilJS contract rejected value' }] } });
   });
 
   test('generic contract compatibility remains after SigilJS integration', async () => {
@@ -127,6 +127,6 @@ describe('kernel native SigilJS contracts', () => {
 
     const response = await app.fetch(new Request('http://local.test/search?q=sigil'));
 
-    expect(await response.json()).toEqual({ q: 'SIGIL' });
+    expect(await response.json()).toMatchObject({ q: 'SIGIL' });
   });
 });

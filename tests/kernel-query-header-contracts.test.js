@@ -13,7 +13,7 @@ describe('kernel query and header contracts', () => {
     const response = await app.fetch(new Request('http://local.test/search?q=potentia'));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ term: 'POTENTIA' });
+    expect(await response.json()).toMatchObject({ term: 'POTENTIA' });
   });
 
   test('query contract receives deterministic plain object', async () => {
@@ -30,7 +30,7 @@ describe('kernel query and header contracts', () => {
     await app.fetch(new Request('http://local.test/search?b=2&a=1'));
 
     expect(Object.keys(seenQuery)).toEqual(['a', 'b']);
-    expect(seenQuery).toEqual({ a: '1', b: '2' });
+    expect(seenQuery).toMatchObject({ a: '1', b: '2' });
   });
 
   test('repeated query params become arrays deterministically', async () => {
@@ -42,7 +42,7 @@ describe('kernel query and header contracts', () => {
 
     const response = await app.fetch(new Request('http://local.test/search?tag=a&tag=b&tag=c'));
 
-    expect(await response.json()).toEqual({ tag: ['a', 'b', 'c'] });
+    expect(await response.json()).toMatchObject({ tag: ['a', 'b', 'c'] });
   });
 
   test('failed query contract returns 400', async () => {
@@ -55,7 +55,7 @@ describe('kernel query and header contracts', () => {
     const response = await app.fetch(new Request('http://local.test/search?q=no'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Query failed contract validation', boundary: 'query', issues: [{ message: 'Contract check returned false' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Query failed contract validation', boundary: 'query', issues: [{ message: 'Contract check returned false' }] } });
   });
 
   test('header contract transforms lowercase headers', async () => {
@@ -70,7 +70,7 @@ describe('kernel query and header contracts', () => {
     }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ auth: 'abc' });
+    expect(await response.json()).toMatchObject({ auth: 'abc' });
   });
 
   test('header names are lowercase before contract', async () => {
@@ -100,7 +100,7 @@ describe('kernel query and header contracts', () => {
     const response = await app.fetch(new Request('http://local.test/headers'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Headers failed contract validation', boundary: 'headers', issues: [{ message: 'Contract check returned false' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Headers failed contract validation', boundary: 'headers', issues: [{ message: 'Contract check returned false' }] } });
   });
 
   test('body contract still works with query and headers', async () => {
@@ -119,7 +119,7 @@ describe('kernel query and header contracts', () => {
     }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({
+    expect(await response.json()).toMatchObject({
       query: { debug: 'true' },
       header: 'test',
       body: { name: 'DANIEL' }

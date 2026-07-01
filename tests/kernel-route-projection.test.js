@@ -79,6 +79,7 @@ describe('kernel route projection', () => {
       path: null,
       contracts: { params: null, query: null, headers: null, body: null, response: null },
       hooks: { beforeRequest: 0, afterResponse: 0, onError: 0 },
+      action: null,
       source: null,
       meta: null
     });
@@ -104,6 +105,7 @@ describe('kernel route projection', () => {
       'path',
       'contracts',
       'hooks',
+      'action',
       'source',
       'meta'
     ]);

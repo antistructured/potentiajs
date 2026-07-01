@@ -1,4 +1,6 @@
 import { projectContract } from './contract-projection.js';
+import { isAction } from './action.js';
+import { projectAction } from './action-projection.js';
 import { createRouteId } from './route-id.js';
 import { composeRoutes } from './route-collection.js';
 
@@ -14,6 +16,7 @@ export function projectRoute(value) {
       path: null,
       contracts: emptyProjectedContracts(),
       hooks: emptyHookSummary(),
+      action: null,
       source: null,
       meta: null
     };
@@ -27,6 +30,7 @@ export function projectRoute(value) {
     path: value.path,
     contracts: projectContractBoundaries(value.options),
     hooks: summarizeHooks(value.hooks),
+    action: isAction(value.handler) ? projectAction(value.handler) : null,
     source: value.source || null,
     meta: Object.prototype.hasOwnProperty.call(value, 'meta') ? value.meta : null
   };

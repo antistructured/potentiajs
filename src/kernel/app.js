@@ -1,3 +1,4 @@
+import { isAction, runAction } from './action.js';
 import { applyContract, applyNamedRequestContract, createContractFailure, parseContractBody } from './contract.js';
 import { createRequestContext } from './context.js';
 import { createFrameworkError, ERROR_CODES, normalizeFrameworkError } from './error.js';
@@ -6,7 +7,7 @@ import { pluginRoutes } from './plugin.js';
 import { fail } from './result.js';
 import { composeRoutes, normalizeHooks } from './route-collection.js';
 import { matchRoute } from './route.js';
-import { isResponseDescriptor, replaceResponseBody, responseBody, toResponse } from './response.js';
+import { isRedirectResponse, isResponseDescriptor, replaceResponseBody, responseBody, toResponse } from './response.js';
 
 export function createApp(options = {}) {
   const state = Object.prototype.hasOwnProperty.call(options, 'state') ? options.state : null;
@@ -51,9 +52,10 @@ async function handleRequest(request, routes, state, hooks) {
       return await projectAndRunAfterHooks(before, afterHooks, context);
     }
 
-    await applyRequestContracts(context, match.route.options);
+    const actionRoute = isAction(match.route.handler);
+    await applyRequestContracts(context, match.route.options, { body: !actionRoute });
 
-    const value = await runEffect(match.route.handler, context);
+    const value = actionRoute ? await runAction(match.route.handler, context, { routeOptions: match.route.options }) : await runEffect(match.route.handler, context);
     const contracted = applyResponseContract(value, match.route.options);
     return await projectAndRunAfterHooks(contracted, afterHooks, context);
   } catch (error) {
@@ -61,12 +63,12 @@ async function handleRequest(request, routes, state, hooks) {
   }
 }
 
-async function applyRequestContracts(context, options) {
+async function applyRequestContracts(context, options, config = {}) {
   context.params = applyNamedRequestContract('Params', options.params, context.params);
   context.query = applyNamedRequestContract('Query', options.query, context.query);
   context.headers = applyNamedRequestContract('Headers', options.headers, context.headers);
 
-  if (options.body) {
+  if (options.body && config.body !== false) {
     try {
       context.body = await parseContractBody(context.request, options.body);
     } catch (error) {
@@ -78,6 +80,7 @@ async function applyRequestContracts(context, options) {
 function applyResponseContract(value, options) {
   if (!options.response) return value;
   if (value instanceof Response) return value;
+  if (isRedirectResponse(value)) return value;
 
   try {
     const body = responseBody(value);

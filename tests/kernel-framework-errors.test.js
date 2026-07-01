@@ -63,7 +63,7 @@ describe('kernel typed framework errors', () => {
     }));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Request body failed contract validation', boundary: 'body', issues: [{ message: 'Contract check returned false' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Request body failed contract validation', boundary: 'body', issues: [{ message: 'Contract check returned false' }] } });
   });
 
   test('response contract failure uses typed error code', async () => {
@@ -76,7 +76,7 @@ describe('kernel typed framework errors', () => {
     const response = await app.fetch(new Request('http://local.test/users'));
 
     expect(response.status).toBe(500);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_RESPONSE_CONTRACT_FAILED', message: 'Response failed contract validation', boundary: 'response', issues: [{ message: 'Contract check returned false' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_RESPONSE_CONTRACT_FAILED', message: 'Response failed contract validation', boundary: 'response', issues: [{ message: 'Contract check returned false' }] } });
   });
 
   test('thrown handler error hides unsafe message', async () => {

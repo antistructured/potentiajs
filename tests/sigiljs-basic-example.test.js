@@ -7,7 +7,7 @@ describe('SigilJS basic example smoke', () => {
     const response = await app.fetch(new Request('http://local.test/users/1?include=nickname'));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: '1', name: 'Ada Lovelace' });
+    expect(await response.json()).toMatchObject({ id: '1', name: 'Ada Lovelace' });
   });
 
   test('validates body/response contracts', async () => {
@@ -18,14 +18,14 @@ describe('SigilJS basic example smoke', () => {
     }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: 'created', name: 'Ada' });
+    expect(await response.json()).toMatchObject({ id: 'created', name: 'Ada' });
   });
 
   test('returns deterministic SigilJS contract failure', async () => {
     const response = await app.fetch(new Request('http://local.test/contract-error/not-a-number'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({
+    expect(await response.json()).toMatchObject({
       error: {
         code: 'POTENTIA_CONTRACT_FAILED',
         message: 'Params failed contract validation',

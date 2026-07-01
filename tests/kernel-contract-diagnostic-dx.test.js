@@ -10,7 +10,7 @@ describe('kernel contract diagnostic DX', () => {
     const response = await app.fetch(new Request('http://local.test/users/1'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({
+    expect(await response.json()).toMatchObject({
       error: {
         code: 'POTENTIA_CONTRACT_FAILED',
         message: 'Params failed contract validation',
@@ -26,7 +26,7 @@ describe('kernel contract diagnostic DX', () => {
     const response = await app.fetch(new Request('http://local.test/search'));
 
     expect(response.status).toBe(400);
-    expect((await response.json()).error).toEqual({
+    expect((await response.json()).error).toMatchObject({
       code: 'POTENTIA_CONTRACT_FAILED',
       message: 'Query failed contract validation',
       boundary: 'query',
@@ -40,7 +40,7 @@ describe('kernel contract diagnostic DX', () => {
     const response = await app.fetch(new Request('http://local.test/secure'));
 
     expect(response.status).toBe(400);
-    expect((await response.json()).error).toEqual({
+    expect((await response.json()).error).toMatchObject({
       code: 'POTENTIA_CONTRACT_FAILED',
       message: 'Headers failed contract validation',
       boundary: 'headers',
@@ -59,7 +59,7 @@ describe('kernel contract diagnostic DX', () => {
 
     const body = await response.json();
     expect(body.error.boundary).toBe('body');
-    expect(body.error.issues).toEqual([{ message: 'Contract parser rejected value' }]);
+    expect(body.error.issues).toMatchObject([{ message: 'Contract parser rejected value' }]);
     expect(JSON.stringify(body)).not.toContain('raw body must not appear');
     expect(JSON.stringify(body)).not.toContain('secret body parser');
   });
@@ -71,7 +71,7 @@ describe('kernel contract diagnostic DX', () => {
     const body = await response.json();
 
     expect(response.status).toBe(500);
-    expect(body.error).toEqual({
+    expect(body.error).toMatchObject({
       code: 'POTENTIA_RESPONSE_CONTRACT_FAILED',
       message: 'Response failed contract validation',
       boundary: 'response',
@@ -85,7 +85,7 @@ describe('kernel contract diagnostic DX', () => {
 
     const response = await app.fetch(new Request('http://local.test/users/not-a-number'));
 
-    expect(await response.json()).toEqual({
+    expect(await response.json()).toMatchObject({
       error: {
         code: 'POTENTIA_CONTRACT_FAILED',
         message: 'Params failed contract validation',

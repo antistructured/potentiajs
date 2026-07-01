@@ -3,6 +3,9 @@ export const ERROR_CODES = {
   METHOD_NOT_ALLOWED: 'POTENTIA_METHOD_NOT_ALLOWED',
   CONTRACT_FAILED: 'POTENTIA_CONTRACT_FAILED',
   RESPONSE_CONTRACT_FAILED: 'POTENTIA_RESPONSE_CONTRACT_FAILED',
+  ACTION_INPUT_FAILED: 'POTENTIA_ACTION_INPUT_FAILED',
+  ACTION_OUTPUT_FAILED: 'POTENTIA_ACTION_OUTPUT_FAILED',
+  ACTION_HANDLER_FAILED: 'POTENTIA_ACTION_HANDLER_FAILED',
   HANDLER_FAILED: 'POTENTIA_HANDLER_FAILED',
   BAD_REQUEST: 'POTENTIA_BAD_REQUEST'
 };
@@ -61,13 +64,14 @@ function mapLegacyCode(code) {
   if (code === 'BAD_REQUEST') return ERROR_CODES.CONTRACT_FAILED;
   if (code === 'RESPONSE_CONTRACT_FAILED') return ERROR_CODES.RESPONSE_CONTRACT_FAILED;
   if (code === 'ERROR') return ERROR_CODES.HANDLER_FAILED;
-  return code.startsWith('POTENTIA_') ? code : ERROR_CODES.HANDLER_FAILED;
+  return code;
 }
 
 function statusForCode(code) {
   if (code === ERROR_CODES.NOT_FOUND) return 404;
   if (code === ERROR_CODES.METHOD_NOT_ALLOWED) return 405;
   if (code === ERROR_CODES.CONTRACT_FAILED) return 400;
+  if (code === ERROR_CODES.ACTION_INPUT_FAILED) return 400;
   if (code === ERROR_CODES.BAD_REQUEST) return 400;
   return 500;
 }
@@ -81,6 +85,9 @@ function defaultMessage(code) {
   if (code === ERROR_CODES.METHOD_NOT_ALLOWED) return 'Route matched the path, but not the request method';
   if (code === ERROR_CODES.CONTRACT_FAILED) return 'Request failed contract validation';
   if (code === ERROR_CODES.RESPONSE_CONTRACT_FAILED) return 'Response failed contract validation';
+  if (code === ERROR_CODES.ACTION_INPUT_FAILED) return 'Action input contract failed.';
+  if (code === ERROR_CODES.ACTION_OUTPUT_FAILED) return 'Action output contract failed.';
+  if (code === ERROR_CODES.ACTION_HANDLER_FAILED) return 'Internal server error';
   if (code === ERROR_CODES.BAD_REQUEST) return 'Bad request';
   return 'Internal server error';
 }

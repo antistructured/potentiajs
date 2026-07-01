@@ -2,38 +2,32 @@
 
 ## Scope
 
-This document classifies the package root exports from `src/index.js` for the public preview readiness gate.
+This document classifies the package root exports from `src/index.js` for the public preview readiness re-gate.
 
-All current exports are **experimental public**. No export is stable.
+All current exports are **experimental**. No export is stable.
 
 ## Files inspected
 
 - `src/index.js`
-- `src/kernel/app.js`
-- `src/kernel/context.js`
-- `src/kernel/contract.js`
-- `src/kernel/contract-projection.js`
-- `src/kernel/effect.js`
-- `src/kernel/error.js`
-- `src/kernel/plugin.js`
-- `src/kernel/response.js`
-- `src/kernel/result.js`
-- `src/kernel/route.js`
-- `src/kernel/route-collection.js`
 - `README.md`
-- `examples/`
-- `tests/`
-- `docs/internal/framework-public-surface-classification.md`
+- `tests/` root import usage
+- `examples/` root/source-relative import usage
+- prior `docs/internal/public-preview-api-classification.md`
 
-## Current package exports
+## Live root exports
 
-Live root exports:
+Verified with a live import from `./src/index.js`:
 
+- `action`
+- `call`
 - `composeRoutes`
+- `context`
 - `createApp`
+- `createFormState`
 - `createFrameworkError`
 - `createPlugin`
 - `createRequestContext`
+- `createRouteManifest`
 - `createRoutes`
 - `effect`
 - `fail`
@@ -41,80 +35,79 @@ Live root exports:
 - `mount`
 - `normalizeFrameworkError`
 - `ok`
+- `projectAction`
 - `projectContract`
-- `createRouteManifest`
+- `projectForm`
 - `projectRoute`
 - `projectRoutes`
-- `call`
-- `context`
-- `value`
 - `redirect`
 - `route`
 - `runEffect`
 - `text`
 - `toResponse`
+- `value`
 
-## Export classification
+## Re-gate classification
 
-| Export | Classification | Purpose | Minimal usage | Stability | Known limitations | Preview survival intent |
-| --- | --- | --- | --- | --- | --- | --- |
-| `createApp` | experimental public | Create an app object with `fetch(request)`. | `createApp({ routes })` | Experimental | Bun-first; no adapter abstraction; no server factory beyond `fetch`. | Yes, core preview surface. |
-| `route` | experimental public | Define an explicit route. | `route('GET', '/', handler, options)` | Experimental | No route aliases, host routing, optional params, or file routing. | Yes, core preview surface. |
-| `createRoutes` | experimental public | Group routes with optional prefix/hooks/contracts. | `createRoutes({ prefix, routes })` | Experimental | No file discovery or lazy loading. | Yes, core composition surface. |
-| `mount` | experimental public | Explicitly mount a route/collection/array with optional prefix/hooks/contracts. | `mount(routes, { prefix: '/api' })` | Experimental | No host/version helpers; prefix params not supported. | Yes, core composition surface. |
-| `composeRoutes` | experimental public | Flatten route entries into effective routes. | `composeRoutes([route(...), createRoutes(...)])` | Experimental | Low-level helper; not required for most consumers. | Maybe; useful but may become internal later. |
-| `createPlugin` | experimental public | Create a tiny plugin object with routes/hooks/contracts/setup. | `createPlugin({ name, routes })` | Experimental | No registry, discovery, async loading, permissions, or DI. | Maybe; intentionally minimal, could change. |
-| `createRequestContext` | experimental public | Build the request context for matched routes. | `createRequestContext(request, match, state)` | Experimental | Mostly useful for tests/advanced use; shape may change. | Maybe; candidate to internalize later. |
-| `effect` | experimental public | Wrap generator/effect workflows. | `effect(function* (ctx) { ... })` | Experimental | Minimal command set only: value/call/context. | Yes, current effect surface. |
-| `call` | experimental public | Create a shape-stable effect call command. | `yield call(fn, ...args)` | Experimental | No concurrency/retry/cancel semantics. | Yes, current effect DX surface. |
-| `value` | experimental public | Create a shape-stable effect value command. | `yield value(data)` | Experimental | Simple pass-through only. | Yes, current effect DX surface. |
-| `context` | experimental public | Create a shape-stable context lookup command. | `yield context('key')` | Experimental | Direct key lookup only. | Yes, current effect DX surface. |
-| `runEffect` | experimental public | Execute plain/async/effect handlers. | `await runEffect(handler, ctx)` | Experimental | Minimal interpreter; not a full effect system. | Maybe; useful for tests/advanced use. |
-| `ok` | experimental public | Create success result shape. | `ok(json({ ok: true }))` | Experimental | Result shape may evolve before stabilization. | Yes, common handler helper. |
-| `fail` | experimental public | Create failure result shape. | `fail(error)` | Experimental | Error detail projection intentionally limited. | Yes, common handler helper. |
-| `json` | experimental public | Create JSON response descriptor. | `json({ ok: true })` | Experimental | No streaming/file/content negotiation helper. | Yes, common response helper. |
-| `text` | experimental public | Create text response descriptor. | `text('hello')` | Experimental | Plain text only. | Yes, common response helper. |
-| `redirect` | experimental public | Create redirect response descriptor. | `redirect('/login')` | Experimental | Minimal redirect descriptor; no URL policy. | Yes, common response helper. |
-| `toResponse` | experimental public | Project descriptors/results/plain values into native `Response`. | `toResponse(ok(json({})))` | Experimental | Projection order may be refined; native `Response` passthrough skips response contracts. | Maybe; useful lower-level helper. |
-| `createFrameworkError` | experimental public | Create typed Potentia errors. | `createFrameworkError('POTENTIA_BAD_REQUEST', 'Bad request')` | Experimental | Error code set may expand/change. | Yes, error boundary helper. |
-| `normalizeFrameworkError` | experimental public | Normalize unknown errors into typed framework errors. | `normalizeFrameworkError(error)` | Experimental | Hides unsafe messages by design. | Maybe; useful for integrations/tests. |
-| `projectContract` | experimental public | Project generic/SigilJS contract metadata. | `projectContract(contract)` | Experimental | Metadata only; generic contracts stay opaque; no OpenAPI/TS generator. | Maybe; preview docs/debug helper. |
-| `createRouteManifest` | experimental public | Create deterministic route metadata manifests. | `createRouteManifest(app)` | Experimental | No file writer/loader, OpenAPI, clients, or forms generator. | Maybe; preview docs/test/tooling helper. |
-| `projectRoute` | experimental public | Project route method/path/contracts/hooks metadata. | `projectRoute(route(...))` | Experimental | Does not expose handler source or generate manifests. | Maybe; preview docs/test helper. |
-| `projectRoutes` | experimental public | Project route arrays, collections, mounts, or app routes. | `projectRoutes(app)` | Experimental | Not a full manifest/client/docs generator. | Maybe; preview docs/test helper. |
+| Export | Classification | Reason | Preview recommendation |
+| --- | --- | --- | --- |
+| `createApp` | preview-core | Primary app constructor with `fetch`. | Keep public. |
+| `route` | preview-core | Primary explicit route constructor. | Keep public. |
+| `createRoutes` | preview-core | Primary explicit route grouping/composition API. | Keep public. |
+| `mount` | preview-core | Primary explicit mounting API. | Keep public. |
+| `action` | preview-core | Primary action boundary primitive now covered by examples/tests. | Keep public but experimental. |
+| `ok` | preview-core | Common success result helper. | Keep public. |
+| `fail` | preview-core | Common intentional failure result helper. | Keep public. |
+| `json` | preview-core | Common JSON response descriptor. | Keep public. |
+| `text` | preview-core | Common text response descriptor. | Keep public. |
+| `redirect` | preview-core | Common redirect descriptor, important for actions/forms. | Keep public. |
+| `effect` | preview-core | Public handler descriptor for generator workflows. | Keep public but document minimal scope. |
+| `call` | preview-core | Public effect command helper. | Keep public. |
+| `value` | preview-core | Public effect command helper. | Keep public. |
+| `context` | preview-core | Public effect command helper. | Keep public. |
+| `createFormState` | preview-core | Useful opt-in action/form state helper. | Keep public but experimental. |
+| `composeRoutes` | preview-advanced | Low-level composition primitive, useful for tools/tests/advanced users. | Keep for preview or hide in pruning pass. |
+| `createPlugin` | preview-advanced | Minimal plugin seam, useful but early. | Keep experimental; revisit before stable. |
+| `projectContract` | preview-projection | Core metadata/projection primitive. | Keep experimental. |
+| `projectRoute` | preview-projection | Route metadata primitive. | Keep experimental. |
+| `projectRoutes` | preview-projection | Collection/app metadata primitive. | Keep experimental. |
+| `projectAction` | preview-projection | Action metadata primitive. | Keep experimental. |
+| `projectForm` | preview-projection | Renderer-independent form metadata primitive. | Keep experimental. |
+| `createRouteManifest` | preview-projection | Deterministic route/action manifest projection. | Keep experimental; no file writer/loader. |
+| `createFrameworkError` | preview-diagnostic | Intentional framework error construction for advanced handlers/tests. | Keep experimental. |
+| `createRequestContext` | preview-internal-candidate | Mostly test/internals shape; app authors rarely need it. | Consider hiding before public preview. |
+| `runEffect` | preview-internal-candidate | Interpreter entry point; tests use it but app authors normally use handlers. | Consider hiding before public preview. |
+| `normalizeFrameworkError` | preview-internal-candidate | Error boundary internal/adapter helper. | Consider hiding before public preview. |
+| `toResponse` | preview-internal-candidate | Response normalization internals; useful in tests but lower-level than examples. | Consider hiding before public preview. |
 
-## Internal implementation details
+## Coherence findings
 
-These are not exported from the package root and should remain internal:
+Names are mostly coherent around explicit nouns and verbs: `createApp`, `route`, `createRoutes`, `mount`, `action`, `project*`, and response/result helpers.
 
-- `matchRoute`
-- `parsePathPattern`
-- `normalizeHooks`
-- `pluginRoutes`
-- contract adapter internals such as `normalizeContract`, `applyContract`, `createContractFailure`
-- response internals such as `errorResponse`, `responseBody`, `replaceResponseBody`
-- error constants/helpers not exported at the root
+The projection family is sizeable but coherent. Projection APIs may feel early, but they are central to Potentia's tooling story and obey the metadata-only law. They should stay experimental and clearly not be described as generators.
 
-## Deferred public surfaces
+The root export list is becoming large for a `0.0.1` private package. The risk is not catastrophic, but a pruning/stabilization pass before public preview would reduce commitment pressure.
 
-Not implemented or not promoted:
+## README exposure findings
 
-- file routing / route discovery API
-- frontend runtime API
-- compiler API / `.view` API
-- CLI API
-- DB/auth APIs
-- OpenAPI/schema/docs/client/forms generator APIs
-- full middleware ecosystem
-- plugin registry/discovery/async loading
-- TypeScript declaration surface
+README examples use the core path heavily and mention internal candidates only in the public API status section. This is appropriate for a re-gate. Tutorial examples do not require `createRequestContext`, `runEffect`, `normalizeFrameworkError`, or `toResponse`.
 
-## Accidental exports
+## Internal implementation details that remain unexported
 
-No accidental package-root export was found in `src/index.js`.
+- route matching/parser internals
+- contract adapter internals
+- diagnostics internals
+- action input parsing internals
+- form projection low-level helpers from package root
+- file-routing scanner/generator/writer internals
 
-`composeRoutes`, `createRequestContext`, `runEffect`, `toResponse`, `normalizeFrameworkError`, `projectContract`, `projectRoute`, and `projectRoutes` are lower-level than the primary tutorial path. They are intentionally exported today but should be reconsidered before any stable API commitment.
+## Risks
 
-## Stability statement
+- `createRequestContext`, `runEffect`, `normalizeFrameworkError`, and `toResponse` are likely too low-level for public preview root exports.
+- `composeRoutes` may be more of a tooling helper than an app-author API, though it is understandable.
+- Projection APIs are intentionally early; they should remain experimental and metadata-only.
+- No TypeScript declarations means public consumers get no typed API contract yet.
 
-No API is stable. All public exports remain experimental for the public preview gate.
+## Recommendation
+
+Do not remove exports in this re-gate. Use the final readiness recommendation to decide whether the next block should be an API pruning/stabilization pass before publish prep.

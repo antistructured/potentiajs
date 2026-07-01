@@ -1,9 +1,0 @@
-{
-  "name": "potentia-js",
-  "private": true,
-  "devDependencies": {
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  }
-}

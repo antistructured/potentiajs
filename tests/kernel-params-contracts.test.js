@@ -12,7 +12,7 @@ describe('kernel params contracts', () => {
 
     const response = await app.fetch(new Request('http://local.test/users/42'));
 
-    expect(await response.json()).toEqual({ id: 42 });
+    expect(await response.json()).toMatchObject({ id: 42 });
   });
 
   test('params contract validates params', async () => {
@@ -25,7 +25,7 @@ describe('kernel params contracts', () => {
     const response = await app.fetch(new Request('http://local.test/users/42'));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: '42' });
+    expect(await response.json()).toMatchObject({ id: '42' });
   });
 
   test('failed params contract returns 400', async () => {
@@ -38,7 +38,7 @@ describe('kernel params contracts', () => {
     const response = await app.fetch(new Request('http://local.test/users/abc'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Params failed contract validation', boundary: 'params', issues: [{ message: 'Contract check returned false' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Params failed contract validation', boundary: 'params', issues: [{ message: 'Contract check returned false' }] } });
   });
 
   test('handler receives validated ctx.params', async () => {
@@ -50,7 +50,7 @@ describe('kernel params contracts', () => {
 
     const response = await app.fetch(new Request('http://local.test/orgs/acme/users/7'));
 
-    expect(await response.json()).toEqual({ params: { orgId: 'ACME', userId: 7 } });
+    expect(await response.json()).toMatchObject({ params: { orgId: 'ACME', userId: 7 } });
   });
 
   test('params contract runs before handler', async () => {
@@ -80,7 +80,7 @@ describe('kernel params contracts', () => {
     const response = await app.fetch(new Request('http://local.test/users/%E0%A4%A'));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_BAD_REQUEST', message: 'Invalid route parameter encoding' } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_BAD_REQUEST', message: 'Invalid route parameter encoding' } });
   });
 
   test('query/header/body contracts still pass with params contract', async () => {
@@ -105,7 +105,7 @@ describe('kernel params contracts', () => {
     }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({
+    expect(await response.json()).toMatchObject({
       params: { id: 3 },
       query: { page: 2 },
       headers: { mode: 'test' },

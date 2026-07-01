@@ -1,7 +1,0 @@
-{
-  "name": "potentia-js",
-  "module": "index.js",
-  "private": true,
-  "devDependencies": {},
-  "peerDependencies": {}
-}

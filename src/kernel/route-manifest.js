@@ -12,6 +12,7 @@ export function createRouteManifest(input, options = {}) {
   }
 
   const routes = projected.routes.map((route, index) => manifestRoute(route, index));
+  const actions = projected.routes.map((route, index) => manifestAction(route, index)).filter(Boolean);
   const lookupResult = buildLookups(routes);
   diagnostics.push(...lookupResult.diagnostics);
 
@@ -23,9 +24,34 @@ export function createRouteManifest(input, options = {}) {
       version: typeof options.packageVersion === 'string' ? options.packageVersion : null
     },
     routes: routes,
+    actions: actions,
     lookups: lookupResult.lookups,
     diagnostics: diagnostics,
     meta: Object.prototype.hasOwnProperty.call(options, 'meta') ? options.meta : null
+  };
+}
+
+function manifestAction(route, index) {
+  if (!route.action) return null;
+
+  return {
+    kind: 'action',
+    id: route.action.id,
+    routeId: route.id || createRouteId(route),
+    method: route.method,
+    path: normalizeRoutePath(route.path),
+    input: route.action.input,
+    output: route.action.output,
+    result: route.action.result,
+    contentTypes: ['application/json', 'application/x-www-form-urlencoded'],
+    enhancement: {
+      plainForm: true,
+      fetch: true,
+      clientValidation: 'projection-only'
+    },
+    source: route.action.source || null,
+    meta: route.action.meta || null,
+    index: index
   };
 }
 

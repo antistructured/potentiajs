@@ -1,4 +1,5 @@
 import { createFrameworkError, ERROR_CODES } from './error.js';
+import { createRootIssue, sigilIssueFromError } from './diagnostics.js';
 
 export function normalizeContract(contract) {
   if (!contract) {
@@ -81,7 +82,7 @@ export function createContractFailure(boundary, message, cause, options = {}) {
     status: options.status || 400,
     detail: {
       boundary: boundary,
-      issues: safeContractIssues(cause)
+      issues: safeContractIssues(cause, boundary)
     },
     cause: cause,
     expose: true
@@ -121,14 +122,14 @@ function projectSigilContract(contract) {
   };
 }
 
-function safeContractIssues(cause) {
+function safeContractIssues(cause, boundary) {
   if (cause && typeof cause === 'object' && cause.code === 'SIGIL_VALIDATION_FAILED') {
-    return [{ message: 'SigilJS contract rejected value' }];
+    return [sigilIssueFromError(cause, boundary)];
   }
 
   if (cause && typeof cause === 'object' && cause.code === 'POTENTIA_CONTRACT_CHECK_FALSE') {
-    return [{ message: 'Contract check returned false' }];
+    return [createRootIssue({ code: 'check_failed', message: 'Contract check returned false', boundary: boundary, source: 'generic' })];
   }
 
-  return [{ message: 'Contract parser rejected value' }];
+  return [createRootIssue({ code: 'parse_failed', message: 'Contract parser rejected value', boundary: boundary, source: 'generic' })];
 }

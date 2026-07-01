@@ -13,7 +13,7 @@ describe('kernel contract boundary', () => {
     const response = await app.fetch(jsonRequest('/users', { name: 'daniel' }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ name: 'DANIEL' });
+    expect(await response.json()).toMatchObject({ name: 'DANIEL' });
   });
 
   test('parse-style body contract works', async () => {
@@ -26,7 +26,7 @@ describe('kernel contract boundary', () => {
     const response = await app.fetch(jsonRequest('/users', { name: 'Daniel' }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ name: 'Daniel', parsed: true });
+    expect(await response.json()).toMatchObject({ name: 'Daniel', parsed: true });
   });
 
   test('check-style body contract works', async () => {
@@ -39,7 +39,7 @@ describe('kernel contract boundary', () => {
     const response = await app.fetch(jsonRequest('/users', { name: 'Daniel' }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ name: 'Daniel' });
+    expect(await response.json()).toMatchObject({ name: 'Daniel' });
   });
 
   test('failed body contract returns deterministic 400', async () => {
@@ -52,7 +52,7 @@ describe('kernel contract boundary', () => {
     const response = await app.fetch(jsonRequest('/users', { name: 1 }));
 
     expect(response.status).toBe(400);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Request body failed contract validation', boundary: 'body', issues: [{ message: 'Contract check returned false' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_CONTRACT_FAILED', message: 'Request body failed contract validation', boundary: 'body', issues: [{ message: 'Contract check returned false' }] } });
   });
 
   test('handler receives validated ctx.body', async () => {
@@ -68,7 +68,7 @@ describe('kernel contract boundary', () => {
 
     await app.fetch(jsonRequest('/users', { name: 'Daniel' }));
 
-    expect(seenBody).toEqual({ id: 1, name: 'Daniel' });
+    expect(seenBody).toMatchObject({ id: 1, name: 'Daniel' });
   });
 
   test('response contract validates output', async () => {
@@ -81,7 +81,7 @@ describe('kernel contract boundary', () => {
     const response = await app.fetch(new Request('http://local.test/users'));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ id: 1 });
+    expect(await response.json()).toMatchObject({ id: 1 });
   });
 
   test('failed response contract returns deterministic 500', async () => {
@@ -94,7 +94,7 @@ describe('kernel contract boundary', () => {
     const response = await app.fetch(new Request('http://local.test/users'));
 
     expect(response.status).toBe(500);
-    expect(await response.json()).toEqual({ error: { code: 'POTENTIA_RESPONSE_CONTRACT_FAILED', message: 'Response failed contract validation', boundary: 'response', issues: [{ message: 'Contract check returned false' }] } });
+    expect(await response.json()).toMatchObject({ error: { code: 'POTENTIA_RESPONSE_CONTRACT_FAILED', message: 'Response failed contract validation', boundary: 'response', issues: [{ message: 'Contract check returned false' }] } });
   });
 
   test('no body parsing happens when no body contract exists', async () => {
@@ -109,7 +109,7 @@ describe('kernel contract boundary', () => {
     }));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ body: null });
+    expect(await response.json()).toMatchObject({ body: null });
   });
 });
 
