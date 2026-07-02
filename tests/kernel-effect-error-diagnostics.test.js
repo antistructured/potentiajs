@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
-import { createApp, createFrameworkError, effect, json, ok, route, runEffect } from '../src/index.js';
+import { createApp, createFrameworkError, effect, json, ok, route } from '../src/index.js';
+import { runEffect } from '../src/kernel/effect.js';
 
 describe('kernel effect error diagnostics', () => {
   test('internal unknown command error message is useful', async () => {

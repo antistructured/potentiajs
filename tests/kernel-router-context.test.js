@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
-import { createApp, createRequestContext, json, ok, route } from '../src/index.js';
+import { createApp, json, ok, route } from '../src/index.js';
+import { createRequestContext } from '../src/kernel/context.js';
 
 describe('kernel router and request context', () => {
   test('app exposes fetch', () => {

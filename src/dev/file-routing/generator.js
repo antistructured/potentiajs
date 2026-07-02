@@ -17,7 +17,7 @@ export function generateRouteModule(scanResult, options = {}) {
   }
 
   const imports = buildImports(scanResult, outputPath);
-  const source = renderModule(scanResult, imports, options.packageName || 'potentia-js');
+  const source = renderModule(scanResult, imports, options.packageName || 'potentiajs');
 
   return {
     ok: true,

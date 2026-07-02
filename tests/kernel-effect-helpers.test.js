@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
-import { call, context, createApp, createRoutes, effect, json, ok, route, runEffect, value } from '../src/index.js';
+import { call, context, createApp, createRoutes, effect, json, ok, route, value } from '../src/index.js';
+import { runEffect } from '../src/kernel/effect.js';
 
 describe('kernel effect command helpers', () => {
   test('call returns stable command shape', () => {

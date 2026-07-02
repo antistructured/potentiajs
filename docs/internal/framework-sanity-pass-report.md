@@ -176,7 +176,7 @@ No source code, dependency, package metadata, or lockfile changes were made.
 
 ## 18. Recommended next block
 
-**Framework Kernel Foundation — Manual Virtual Sub-Agent Workflow**
+### Framework Kernel Foundation — Manual Virtual Sub-Agent Workflow
 
 Build or harden the smallest Bun-native framework kernel that can prove:
 

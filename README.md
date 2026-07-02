@@ -6,15 +6,15 @@ It is **not production-ready** and has **no stable public API** yet.
 
 ## Current status
 
-- Package: `potentia-js`
-- Version: `0.0.1`
-- Visibility: private
-- License metadata: `UNLICENSED`
+- Package: `potentiajs`
+- Version: `0.1.0-preview.0`
+- Visibility: public preview package candidate
+- License: MIT
 - Runtime: Bun
 - Source: plain JavaScript ES modules
 - TypeScript source: none
 - Runtime dependency: `@weipertda/sigiljs@0.18.0`
-- Future preview target: `0.0.2-preview.0`
+- Type declarations: minimal conservative declarations included
 
 Current kernel flow:
 
@@ -23,6 +23,14 @@ Request → Route Match → Contract Boundary → Effect Execution → Result No
 ```
 
 ## Install / local usage
+
+After the final publish gate, the preview package install shape is:
+
+```bash
+bun add potentiajs
+```
+
+Until the package is actually published, use this repository or a packed-artifact smoke project.
 
 From this repository:
 
@@ -33,12 +41,12 @@ bun run check
 bun run check:preview
 ```
 
-The package is not npm-ready yet. Use local checkout or packed-artifact experiments only after preview checks pass.
+The package is prepared for public preview dry-runs, but real publish is still intentionally deferred to a separate owner-approved final publish command gate.
 
 ## Minimal route
 
 ```js
-import { createApp, json, ok, route } from 'potentia-js';
+import { createApp, json, ok, route } from 'potentiajs';
 
 const app = createApp({
   routes: [
@@ -55,7 +63,7 @@ Potentia uses SigilJS for runtime contracts.
 
 ```js
 import { sigil, optional } from '@weipertda/sigiljs';
-import { createApp, json, ok, route } from 'potentia-js';
+import { createApp, json, ok, route } from 'potentiajs';
 
 const UserParams = sigil({ id: String });
 const UserQuery = sigil({ include: optional(String) });
@@ -82,7 +90,7 @@ SigilJS `0.18.0` uses JavaScript constructors/helpers such as `sigil({ id: Strin
 Composition is explicit. There is no implemented file routing, auto-discovery, or global mutable route registry.
 
 ```js
-import { createApp, createRoutes, json, mount, ok, route } from 'potentia-js';
+import { createApp, createRoutes, json, mount, ok, route } from 'potentiajs';
 
 const userRoutes = createRoutes({
   prefix: '/users',
@@ -119,7 +127,7 @@ The prototype can scan a route tree and generate an explicit `.potentia/routes.g
 Handlers and hooks may be plain functions, async functions, or experimental `effect(...)` descriptors. Effect helpers are small command constructors that keep generator workflows readable.
 
 ```js
-import { call, effect, json, ok, route } from 'potentia-js';
+import { call, effect, json, ok, route } from 'potentiajs';
 
 const loadGreeting = (name) => ({ message: `hello ${name}` });
 
@@ -138,12 +146,12 @@ The current effect runner is intentionally small. It is not a full effect system
 Projection APIs are experimental metadata helpers for docs, tests, examples, and future tooling. They do not execute handlers, hooks, or generic contract logic.
 
 ```js
-import { createRouteManifest, projectContract, projectRoute, projectRoutes } from 'potentia-js';
+import { createRouteManifest, projectContract, projectRoute, projectRoutes } from 'potentiajs';
 
 const contract = projectContract(UserResponse);
 const single = projectRoute(route('GET', '/users/:id', handler, { response: UserResponse }));
 const collection = projectRoutes(app);
-const manifest = createRouteManifest(app, { packageName: 'potentia-js', packageVersion: '0.0.1' });
+const manifest = createRouteManifest(app, { packageName: 'potentiajs', packageVersion: '0.1.0-preview.0' });
 ```
 
 `projectContract()` reports honest metadata such as capability, opacity, schema, field summaries, required fields, and optional fields. Generic function/parse/check contracts remain opaque. SigilJS contracts expose richer metadata only where SigilJS safely provides it.
@@ -157,7 +165,7 @@ Route metadata is experimental. Routes may include optional `name`, `meta`, and 
 Actions are experimental server-side contract boundaries. They support JSON input and `application/x-www-form-urlencoded` input. Parsed and validated action input is attached to `ctx.input`, handlers may use plain/async/effect execution, and output contracts validate the logical response body before route response projection.
 
 ```js
-import { action, call, effect, json, ok, route } from 'potentia-js';
+import { action, call, effect, json, ok, route } from 'potentiajs';
 
 const createUser = action('users.create', effect(function* createUser(ctx) {
   const user = yield call(insertUser, ctx.input);
@@ -271,6 +279,7 @@ Each example exports `app` for smoke tests and only starts `Bun.serve()` when ru
 bun run test          # test suite
 bun run check         # current local check
 bun run check:preview # tests + check + npm pack dry-run
+bun run check:release # preview release check alias
 bun run check:file-routing # internal file-routing projection tests
 bun run generate:file-routes -- --root routes --out .potentia/routes.generated.js # internal/dev-only generation wrapper
 bun run pack:dry      # npm pack --dry-run --json
@@ -281,8 +290,7 @@ bun run pack:dry      # npm pack --dry-run --json
 Deferred intentionally:
 
 - stable public APIs
-- registry publish
-- root license/repository metadata decisions
+- real registry publish until owner runs final publish gate
 - stable public file-based routing API and route auto-discovery
 - nested layout routing
 - frontend rendering and hydration
@@ -293,7 +301,7 @@ Deferred intentionally:
 - async plugin loading/discovery
 - advanced effect workflows/concurrency/retries/cancellation
 - field-level verbose contract diagnostics
-- OpenAPI/JSON Schema/TypeScript/route docs/client/forms generators
+- OpenAPI/JSON Schema/route docs/client/forms generators
 - multipart/file uploads and form generation
 - session/flash form state persistence
 - route manifest file writing/loading
@@ -303,27 +311,41 @@ Deferred intentionally:
 - database integration
 - auth
 - package splitting
-- CI/release automation
+- automatic publish on push
 
 ## Public API status
 
 All exports are experimental:
 
 - app/routes/actions/forms: `createApp`, `route`, `action`, `createFormState`, `createRoutes`, `mount`, `composeRoutes`
-- results/responses: `ok`, `fail`, `json`, `text`, `redirect`, `toResponse`
-- effects: `effect`, `call`, `value`, `context`, `runEffect`
-- errors: `createFrameworkError`, `normalizeFrameworkError`
-- contracts/projection/manifest/plugins/context: `projectContract`, `projectAction`, `projectForm`, `projectRoute`, `projectRoutes`, `createRouteManifest`, `createPlugin`, `createRequestContext`
+- results/responses: `ok`, `fail`, `json`, `text`, `redirect`
+- effects: `effect`, `call`, `value`, `context`
+- errors: `createFrameworkError`
+- contracts/projection/manifest/plugins: `projectContract`, `projectAction`, `projectForm`, `projectRoute`, `projectRoutes`, `createRouteManifest`, `createPlugin`
 
-Lower-level exports such as `createRequestContext`, `runEffect`, `normalizeFrameworkError`, and `toResponse` may be hidden or reshaped before any stable API commitment.
+Lower-level implementation helpers such as request-context construction, effect execution, framework error normalization, and response projection remain internal and may be reshaped before any stable API commitment.
 
-## Registry blockers
+## Release / publish status
 
-Before a public registry preview:
+Prepared for public preview dry-run verification:
 
-- package is still private
-- root `LICENSE` file is absent
-- repository/bugs/homepage metadata are not set
-- no Git repository was detected in this checkout
+- package metadata targets `potentiajs@0.1.0-preview.0`
+- license is MIT
+- repository metadata targets `https://github.com/antistructured/potentiajs`
+- package is configured as public
+- `CHANGELOG.md` and conservative declarations are included
 - no public API is stable
-- packed-artifact install smoke passes locally; publish-prep release smoke still needs a human-confirmed publish target
+- real publish has not been run
+
+Final publish requires explicit owner confirmation and npm account/trusted-publishing setup.
+
+## License
+
+MIT © Daniel Weipert
+
+See [`LICENSE`](LICENSE).
+
+## Changelog
+
+See [`CHANGELOG.md`](CHANGELOG.md).
+

@@ -1,6 +1,6 @@
 # Potentia kernel basic example
 
-A small Bun-native source example for the experimental `potentia-js` kernel.
+A small Bun-native source example for the experimental `potentiajs` kernel.
 
 It demonstrates:
 

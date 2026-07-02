@@ -8,11 +8,11 @@ describe('kernel route manifest', () => {
     const manifest = createRouteManifest([
       route('GET', '/', () => 'ok'),
       route('POST', '/users', () => 'ok')
-    ], { packageName: 'potentia-js', packageVersion: '0.0.1' });
+    ], { packageName: 'potentiajs', packageVersion: '0.1.0-preview.0' });
 
     expect(manifest.kind).toBe('potentia-route-manifest');
     expect(manifest.version).toBe(1);
-    expect(manifest.package).toEqual({ name: 'potentia-js', version: '0.0.1' });
+    expect(manifest.package).toEqual({ name: 'potentiajs', version: '0.1.0-preview.0' });
     expect(manifest.routes.map((item) => item.id)).toEqual(['GET /', 'POST /users']);
   });
 

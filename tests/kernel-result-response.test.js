@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
-import { fail, json, ok, redirect, text, toResponse } from '../src/index.js';
+import { fail, json, ok, redirect, text } from '../src/index.js';
+import { toResponse } from '../src/kernel/response.js';
 
 describe('kernel result and response helpers', () => {
   test('ok returns a stable success shape', () => {

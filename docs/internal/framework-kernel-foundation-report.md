@@ -100,6 +100,6 @@ All new public APIs are experimental. No stable surface is declared.
 
 ## Recommended next block
 
-**Framework Kernel Hardening — Manual Virtual Sub-Agent Workflow**
+### Framework Kernel Hardening — Manual Virtual Sub-Agent Workflow
 
 Focus on dynamic route params, query/header contract validation, typed error codes, response projection semantics, app-level hooks, composable middleware/effects, an example app smoke test, and release-readiness checks.

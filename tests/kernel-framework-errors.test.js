@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
-import { createApp, createFrameworkError, fail, json, normalizeFrameworkError, ok, route } from '../src/index.js';
+import { createApp, createFrameworkError, fail, json, ok, route } from '../src/index.js';
+import { normalizeFrameworkError } from '../src/kernel/error.js';
 
 describe('kernel typed framework errors', () => {
   test('createFrameworkError creates stable shape', () => {

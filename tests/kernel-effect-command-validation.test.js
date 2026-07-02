@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
-import { call, context, createApp, effect, json, ok, route, runEffect } from '../src/index.js';
+import { call, context, createApp, effect, json, ok, route } from '../src/index.js';
+import { runEffect } from '../src/kernel/effect.js';
 
 describe('kernel effect command validation', () => {
   test('unknown command fails', async () => {

@@ -32,7 +32,7 @@ function parseArgs(args) {
     ok: true,
     root: 'routes',
     out: '.potentia/routes.generated.js',
-    packageName: 'potentia-js'
+    packageName: 'potentiajs'
   };
 
   for (let index = 0; index < args.length; index += 1) {
