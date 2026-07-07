@@ -28,7 +28,7 @@ describe('file routing internal script wrapper', () => {
       expect(result.exitCode).toBe(0);
       expect(new TextDecoder().decode(result.stdout)).toContain('file routes generated:');
       const generated = await readFile(outputFile, 'utf8');
-      expect(generated).toContain("import { createRoutes, mount } from 'potentiajs';");
+      expect(generated).toContain("import { createRoutes, mount } from '@potentiajs/core';");
       expect(generated).not.toContain('node:fs');
     } finally {
       await cleanup();

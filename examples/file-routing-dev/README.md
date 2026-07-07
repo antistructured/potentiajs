@@ -1,8 +1,8 @@
 # File Routing Dev Example
 
-This example demonstrates Potentia's internal/dev-only file-routing projection workflow.
+This repo-only example demonstrates Potentia's file-routing projection workflow.
 
-It is not a stable public API and not a public CLI contract.
+The public preview API is the package subpath `@potentiajs/core/file-routing`, which exports `generateFileRoutes(...)`. This example still uses the repository's internal script wrapper for local development convenience; it is not a public CLI contract.
 
 ## Shape
 
@@ -40,7 +40,7 @@ The `.potentia/` directory is generated output and is ignored by default.
 
 Deferred intentionally:
 
-- stable public file-routing API
+- stable file-routing API guarantees beyond the experimental subpath
 - public CLI/bin command
 - watch mode
 - compiler integration

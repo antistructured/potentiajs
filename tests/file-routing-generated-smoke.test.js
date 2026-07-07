@@ -22,12 +22,13 @@ describe('file routing generated smoke', () => {
       const generated = generateRouteModule(scan, { outputPath });
 
       expect(generated.ok).toBe(true);
-      expect(generated.source).toContain("import { createRoutes, mount } from 'potentiajs';");
+      expect(generated.source).toContain("import { createRoutes, mount } from '@potentiajs/core';");
       expect(generated.source).not.toContain('node:fs');
 
       await mkdir(dirname(outputPath), { recursive: true });
       await mkdir(resolve(fixtureRoot, 'node_modules'), { recursive: true });
-      await symlink(resolve(fixtureRoot, '../../../'), resolve(fixtureRoot, 'node_modules/potentiajs'), 'dir');
+      await mkdir(resolve(fixtureRoot, 'node_modules/@potentiajs'), { recursive: true });
+      await symlink(resolve(fixtureRoot, '../../../'), resolve(fixtureRoot, 'node_modules/@potentiajs/core'), 'dir');
       await writeFile(outputPath, generated.source);
 
       const generatedRoutes = (await import(`${new URL(outputPath, 'file://').href}?t=${Date.now()}`)).default;

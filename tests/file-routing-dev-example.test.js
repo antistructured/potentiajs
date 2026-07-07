@@ -17,7 +17,7 @@ describe('file routing dev workflow example', () => {
       const result = await generateFileRoutes({ rootDir: routesRoot, outputFile });
 
       expect(result.ok).toBe(true);
-      expect(result.source).toContain("import { createRoutes, mount } from 'potentiajs';");
+      expect(result.source).toContain("import { createRoutes, mount } from '@potentiajs/core';");
       expect(result.source).toContain("import scope0 from '../routes/users/_routes.js';");
 
       const { app } = await import(`${exampleIndex}?t=${Date.now()}`);

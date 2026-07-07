@@ -6,7 +6,7 @@ It is **not production-ready** and has **no stable public API** yet.
 
 ## Current status
 
-- Package: `potentiajs`
+- Package: `@potentiajs/core`
 - Version: `0.1.0-preview.0`
 - Visibility: public preview package candidate
 - License: MIT
@@ -24,13 +24,11 @@ Request → Route Match → Contract Boundary → Effect Execution → Result No
 
 ## Install / local usage
 
-After the final publish gate, the preview package install shape is:
+Once registry visibility is confirmed, the preview package install shape is:
 
 ```bash
-bun add potentiajs
+bun add @potentiajs/core
 ```
-
-Until the package is actually published, use this repository or a packed-artifact smoke project.
 
 From this repository:
 
@@ -41,12 +39,12 @@ bun run check
 bun run check:preview
 ```
 
-The package is prepared for public preview dry-runs, but real publish is still intentionally deferred to a separate owner-approved final publish command gate.
+If the registry install command fails, check the post-release verification notes: the registry artifact may not be visible yet even though release metadata is prepared.
 
 ## Minimal route
 
 ```js
-import { createApp, json, ok, route } from 'potentiajs';
+import { createApp, json, ok, route } from '@potentiajs/core';
 
 const app = createApp({
   routes: [
@@ -63,7 +61,7 @@ Potentia uses SigilJS for runtime contracts.
 
 ```js
 import { sigil, optional } from '@weipertda/sigiljs';
-import { createApp, json, ok, route } from 'potentiajs';
+import { createApp, json, ok, route } from '@potentiajs/core';
 
 const UserParams = sigil({ id: String });
 const UserQuery = sigil({ include: optional(String) });
@@ -87,10 +85,10 @@ SigilJS `0.18.0` uses JavaScript constructors/helpers such as `sigil({ id: Strin
 
 ## Route composition
 
-Composition is explicit. There is no implemented file routing, auto-discovery, or global mutable route registry.
+Composition is explicit. File routing is optional generated projection, not auto-discovery during request handling or a global mutable route registry.
 
 ```js
-import { createApp, createRoutes, json, mount, ok, route } from 'potentiajs';
+import { createApp, createRoutes, json, mount, ok, route } from '@potentiajs/core';
 
 const userRoutes = createRoutes({
   prefix: '/users',
@@ -114,20 +112,56 @@ Effective paths:
 - `/api/users`
 - `/api/users/:id`
 
-An internal/dev-only file-routing projection prototype now follows this explicit model:
+The experimental file-routing subpath follows this explicit model:
 
 ```txt
 filesystem → route modules → createRoutes / route / mount → createApp
 ```
 
-The prototype can scan a route tree and generate an explicit `.potentia/routes.generated.js` module, but no public file-routing API is stable yet. The internal dev wrapper can write that generated module during development/build steps. The generated `.potentia/` directory is ignored by default. The runtime kernel does not perform production runtime filesystem scanning, and public CLI/watch/compiler integration remain deferred.
+The file-routing preview API can scan a route tree and generate an explicit `.potentia/routes.generated.js` module. It is a package subpath, not a root export.
+
+Route files:
+
+```txt
+routes/
+  index.js
+  health.js
+  users/
+    [id].js
+```
+
+Generate explicit routes:
+
+```js
+import { generateFileRoutes } from '@potentiajs/core/file-routing';
+
+await generateFileRoutes({
+  rootDir: 'routes',
+  outputFile: '.potentia/routes.generated.js'
+});
+```
+
+Use the generated module explicitly:
+
+```js
+import { createApp } from '@potentiajs/core';
+import routes from './.potentia/routes.generated.js';
+
+const app = createApp({
+  routes: [routes]
+});
+```
+
+File routing remains projection over explicit route composition: generated modules import `createRoutes(...)` / `mount(...)` from `@potentiajs/core`, while runtime apps still consume normal route collections. The generated `.potentia/` directory is ignored by default and is usually not committed. The runtime kernel does not perform production runtime filesystem scanning. There is no public CLI yet; watch/compiler integration remains deferred.
+
+See [`examples/file-routing-basic/`](examples/file-routing-basic/) for a runnable example.
 
 ## Effects
 
 Handlers and hooks may be plain functions, async functions, or experimental `effect(...)` descriptors. Effect helpers are small command constructors that keep generator workflows readable.
 
 ```js
-import { call, effect, json, ok, route } from 'potentiajs';
+import { call, effect, json, ok, route } from '@potentiajs/core';
 
 const loadGreeting = (name) => ({ message: `hello ${name}` });
 
@@ -146,12 +180,12 @@ The current effect runner is intentionally small. It is not a full effect system
 Projection APIs are experimental metadata helpers for docs, tests, examples, and future tooling. They do not execute handlers, hooks, or generic contract logic.
 
 ```js
-import { createRouteManifest, projectContract, projectRoute, projectRoutes } from 'potentiajs';
+import { createRouteManifest, projectContract, projectRoute, projectRoutes } from '@potentiajs/core';
 
 const contract = projectContract(UserResponse);
 const single = projectRoute(route('GET', '/users/:id', handler, { response: UserResponse }));
 const collection = projectRoutes(app);
-const manifest = createRouteManifest(app, { packageName: 'potentiajs', packageVersion: '0.1.0-preview.0' });
+const manifest = createRouteManifest(app, { packageName: '@potentiajs/core', packageVersion: '0.1.0-preview.0' });
 ```
 
 `projectContract()` reports honest metadata such as capability, opacity, schema, field summaries, required fields, and optional fields. Generic function/parse/check contracts remain opaque. SigilJS contracts expose richer metadata only where SigilJS safely provides it.
@@ -165,7 +199,7 @@ Route metadata is experimental. Routes may include optional `name`, `meta`, and 
 Actions are experimental server-side contract boundaries. They support JSON input and `application/x-www-form-urlencoded` input. Parsed and validated action input is attached to `ctx.input`, handlers may use plain/async/effect execution, and output contracts validate the logical response body before route response projection.
 
 ```js
-import { action, call, effect, json, ok, route } from 'potentiajs';
+import { action, call, effect, json, ok, route } from '@potentiajs/core';
 
 const createUser = action('users.create', effect(function* createUser(ctx) {
   const user = yield call(insertUser, ctx.input);
@@ -270,6 +304,7 @@ Unsafe thrown handler errors return `POTENTIA_HANDLER_FAILED` with `Internal ser
 - [`examples/composed-basic/`](examples/composed-basic/) — explicit route composition smoke app.
 - [`examples/action-basic/`](examples/action-basic/) — experimental JSON and URL-encoded action smoke app.
 - [`examples/form-state-basic/`](examples/form-state-basic/) — opt-in safe form state helper smoke app.
+- [`examples/file-routing-basic/`](examples/file-routing-basic/) — experimental file-route generation smoke app.
 
 Each example exports `app` for smoke tests and only starts `Bun.serve()` when run directly.
 
@@ -290,8 +325,8 @@ bun run pack:dry      # npm pack --dry-run --json
 Deferred intentionally:
 
 - stable public APIs
-- real registry publish until owner runs final publish gate
-- stable public file-based routing API and route auto-discovery
+- registry visibility may lag or require release verification
+- stable public file-based routing API and route auto-discovery beyond the experimental `@potentiajs/core/file-routing` generation subpath
 - nested layout routing
 - frontend rendering and hydration
 - client router
@@ -325,19 +360,23 @@ All exports are experimental:
 
 Lower-level implementation helpers such as request-context construction, effect execution, framework error normalization, and response projection remain internal and may be reshaped before any stable API commitment.
 
+Experimental package subpaths:
+
+- file routing generation: `@potentiajs/core/file-routing` exports `generateFileRoutes`
+
 ## Release / publish status
 
 Prepared for public preview dry-run verification:
 
-- package metadata targets `potentiajs@0.1.0-preview.0`
+- package metadata targets `@potentiajs/core@0.1.0-preview.0`
 - license is MIT
 - repository metadata targets `https://github.com/antistructured/potentiajs`
 - package is configured as public
 - `CHANGELOG.md` and conservative declarations are included
 - no public API is stable
-- real publish has not been run
+- registry visibility is verified during post-release checks
 
-Final publish requires explicit owner confirmation and npm account/trusted-publishing setup.
+Post-release verification should confirm the registry package is visible before sharing install instructions widely.
 
 ## License
 
@@ -348,4 +387,5 @@ See [`LICENSE`](LICENSE).
 ## Changelog
 
 See [`CHANGELOG.md`](CHANGELOG.md).
+
 

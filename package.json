@@ -7,6 +7,44 @@
   "main": "./src/index.js",
   "module": "./src/index.js",
   "types": "./src/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./file-routing": {
+      "types": "./src/file-routing.d.ts",
+      "import": "./src/file-routing.js"
+    }
+  },
+  "files": [
+    "src/index.js",
+    "src/index.d.ts",
+    "src/file-routing.js",
+    "src/file-routing.d.ts",
+    "src/kernel/",
+    "src/dev/file-routing/",
+    "examples/kernel-basic/",
+    "examples/sigiljs-basic/",
+    "examples/composed-basic/",
+    "examples/action-basic/",
+    "examples/form-state-basic/",
+    "examples/file-routing-basic/",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "bun test",
+    "check": "bun test",
+    "pack:dry": "npm pack --dry-run --json",
+    "check:preview": "bun run test && bun run check && npm pack --dry-run --json",
+    "check:release": "bun run check:preview",
+    "check:file-routing": "bun test tests/file-routing-*.test.js",
+    "generate:file-routes": "bun scripts/generate-file-routes.js"
+  },
   "keywords": [
     "actions",
     "bun",
@@ -29,47 +67,6 @@
     "sigiljs",
     "validation",
     "web-framework"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "exports": {
-    ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
-    }
-  },
-  "files": [
-    "src/index.js",
-    "src/index.d.ts",
-    "src/kernel/",
-    "examples/kernel-basic/",
-    "examples/sigiljs-basic/",
-    "examples/composed-basic/",
-    "examples/action-basic/",
-    "examples/form-state-basic/",
-    "CHANGELOG.md",
-    "README.md"
-  ],
-  "scripts": {
-    "test": "bun test",
-    "check": "bun test",
-    "pack:dry": "npm pack --dry-run --json",
-    "check:preview": "bun run test && bun run check && npm pack --dry-run --json",
-    "check:release": "bun run check:preview",
-    "check:file-routing": "bun test tests/file-routing-*.test.js",
-    "generate:file-routes": "bun scripts/generate-file-routes.js"
-  },
-  "keywords": [
-    "bun",
-    "javascript",
-    "framework",
-    "contracts",
-    "sigiljs",
-    "routing",
-    "runtime-contracts",
-    "server-actions",
-    "forms"
   ],
   "author": "Daniel Weipert",
   "license": "MIT",

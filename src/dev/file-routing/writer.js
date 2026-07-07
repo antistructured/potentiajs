@@ -54,6 +54,7 @@ export async function generateFileRoutes(options = {}) {
     source: generated.source,
     routes: scan.routes.length,
     scopes: scan.scopes.length,
+    diagnostics: [],
     errors: []
   };
 }
@@ -67,6 +68,7 @@ function failureResult(rootDir, outputFile, errors, routes = 0, scopes = 0) {
     source: '',
     routes: routes,
     scopes: scopes,
+    diagnostics: errors,
     errors: errors
   };
 }

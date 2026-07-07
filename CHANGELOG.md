@@ -2,7 +2,7 @@
 
 ## 0.1.0-preview.0
 
-Experimental public preview for `potentiajs`.
+Experimental public preview for `@potentiajs/core`.
 
 PotentiaJS is still not production-ready and has no stable public API commitment. All root exports remain experimental and may change before a stable release.
 
@@ -41,4 +41,5 @@ PotentiaJS is still not production-ready and has no stable public API commitment
 - Source remains plain JavaScript ES modules.
 - Runtime dependency: `@weipertda/sigiljs@0.18.0`.
 - Minimal TypeScript declarations are included for editor/type discovery, but they are conservative and experimental.
-- Real publish is intentionally deferred to a separate final publish command gate.
+- Post-release verification should confirm the registry artifact users receive.
+

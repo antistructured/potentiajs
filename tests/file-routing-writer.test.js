@@ -28,7 +28,7 @@ describe('file routing writer', () => {
         scopes: 1,
         errors: []
       });
-      expect(result.source).toContain("import { createRoutes, mount } from 'potentiajs';");
+      expect(result.source).toContain("import { createRoutes, mount } from '@potentiajs/core';");
       expect(result.source).not.toContain('node:fs');
 
       const written = await readFile(outputFile, 'utf8');

@@ -13,7 +13,7 @@ describe('file routing generator', () => {
     expect(generated.ok).toBe(true);
     expect(generated.errors).toEqual([]);
     expect(generated.outputPath).toBe(outputPath);
-    expect(generated.source).toContain("import { createRoutes, mount } from 'potentiajs';");
+    expect(generated.source).toContain("import { createRoutes, mount } from '@potentiajs/core';");
     expect(generated.source).toContain("import route0 from '../routes/index.js';");
     expect(generated.source).toContain("import route1 from '../routes/health.js';");
     expect(generated.source).toContain("import route2 from '../routes/users/index.js';");
