@@ -10,6 +10,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "bin": {
+    "potentia": "./bin/potentia.js"
+  },
   "exports": {
     ".": {
       "types": "./src/index.d.ts",
@@ -21,6 +24,8 @@
     }
   },
   "files": [
+    "bin/potentia.js",
+    "src/cli.js",
     "src/index.js",
     "src/index.d.ts",
     "src/file-routing.js",

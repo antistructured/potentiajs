@@ -4,12 +4,12 @@ This example shows PotentiaJS file routing as explicit generated route compositi
 
 ```txt
 route files
-→ generateFileRoutes(...)
+→ potentia routes generate
 → .potentia/routes.generated.js
 → createApp(...)
 ```
 
-File routing is optional and experimental. It is not a CLI, not watch mode, and not runtime request-time filesystem scanning.
+File routing is optional and experimental. The CLI is a thin generation wrapper; it is not watch mode, not a dev server, and not runtime request-time filesystem scanning.
 
 ## Route tree
 
@@ -34,11 +34,44 @@ Projected routes:
 
 ## Generate routes
 
+Use the CLI:
+
+```bash
+potentia routes generate \
+  --root examples/file-routing-basic/routes \
+  --out examples/file-routing-basic/.potentia/routes.generated.js
+```
+
+Verify generated output without writing files:
+
+```bash
+potentia routes check \
+  --root examples/file-routing-basic/routes \
+  --out examples/file-routing-basic/.potentia/routes.generated.js
+```
+
+`generate` writes the route module. `check` only verifies the generated output is current, making it useful for CI.
+
+For scripts and CI tooling, both commands can emit JSON:
+
+```bash
+potentia routes generate --json \
+  --root examples/file-routing-basic/routes \
+  --out examples/file-routing-basic/.potentia/routes.generated.js
+potentia routes check --json \
+  --root examples/file-routing-basic/routes \
+  --out examples/file-routing-basic/.potentia/routes.generated.js
+```
+
+JSON changes output format only: `generate --json` still writes files, `check --json` remains non-mutating, JSON envelopes go to stdout, and exit codes remain the same.
+
+Or run the programmatic example script:
+
 ```bash
 bun examples/file-routing-basic/generate.js
 ```
 
-The generator uses the public subpath:
+The programmatic script uses the public subpath:
 
 ```js
 import { generateFileRoutes } from '@potentiajs/core/file-routing';
@@ -84,7 +117,12 @@ export const app = createApp({
 Generate first, then run the app:
 
 ```bash
-bun examples/file-routing-basic/generate.js
+potentia routes generate \
+  --root examples/file-routing-basic/routes \
+  --out examples/file-routing-basic/.potentia/routes.generated.js
+potentia routes check \
+  --root examples/file-routing-basic/routes \
+  --out examples/file-routing-basic/.potentia/routes.generated.js
 bun examples/file-routing-basic/app.js
 ```
 
@@ -102,14 +140,17 @@ curl http://localhost:3000/users/ada
 - `.potentia/` is ignored by default in this repository.
 - Generation runs during a dev/build step, not during request handling.
 - The generated module must not scan the filesystem at runtime.
+- `potentia routes check` verifies generated output without writing or rewriting files.
+- Add `--json` to `generate` or `check` for machine-readable stdout envelopes; exit codes remain unchanged.
 - Normal app projects usually should not commit `.potentia/`; package authors may choose differently if they intentionally ship generated code.
 - If generation fails, Potentia reports diagnostics and avoids replacing the previous valid output.
 
 ## Deferred
 
-- public CLI/bin
 - watch mode
+- config file support
 - compiler integration
+- dev server
 - TypeScript route files
 - named method exports such as `GET` / `POST`
 - catch-all, optional, and route-group conventions

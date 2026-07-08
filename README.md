@@ -130,7 +130,32 @@ routes/
     [id].js
 ```
 
-Generate explicit routes:
+Generate explicit routes with the experimental CLI:
+
+```bash
+potentia routes generate
+potentia routes check
+```
+
+Equivalent explicit form:
+
+```bash
+potentia routes generate --root routes --out .potentia/routes.generated.js --package @potentiajs/core
+potentia routes check --root routes --out .potentia/routes.generated.js --package @potentiajs/core
+```
+
+`generate` writes `.potentia/routes.generated.js`. `check` verifies the generated output is current without writing files, which makes it suitable for CI. Both commands support the same `--root`, `--out`, `--package`, and `--cwd` flags.
+
+For scripts and CI tooling, add `--json` to either command:
+
+```bash
+potentia routes generate --json
+potentia routes check --json
+```
+
+JSON changes output format only: `generate --json` still writes files, `check --json` remains non-mutating, JSON envelopes go to stdout, and exit codes remain the same. The CLI does not include watch mode, config files, a dev server, or a compiler.
+
+You can also call the programmatic API directly:
 
 ```js
 import { generateFileRoutes } from '@potentiajs/core/file-routing';
@@ -152,7 +177,7 @@ const app = createApp({
 });
 ```
 
-File routing remains projection over explicit route composition: generated modules import `createRoutes(...)` / `mount(...)` from `@potentiajs/core`, while runtime apps still consume normal route collections. The generated `.potentia/` directory is ignored by default and is usually not committed. The runtime kernel does not perform production runtime filesystem scanning. There is no public CLI yet; watch/compiler integration remains deferred.
+File routing remains projection over explicit route composition: generated modules import `createRoutes(...)` / `mount(...)` from `@potentiajs/core`, while runtime apps still consume normal route collections. The generated `.potentia/` directory is ignored by default and is usually not committed. The runtime kernel does not perform production runtime filesystem scanning. Watch mode, config files, dev server behavior, and compiler integration remain deferred.
 
 See [`examples/file-routing-basic/`](examples/file-routing-basic/) for a runnable example.
 
@@ -316,6 +341,8 @@ bun run check         # current local check
 bun run check:preview # tests + check + npm pack dry-run
 bun run check:release # preview release check alias
 bun run check:file-routing # internal file-routing projection tests
+potentia routes generate # experimental file-route generation CLI after package install/link
+potentia routes check # verify generated file-route output is current without writing
 bun run generate:file-routes -- --root routes --out .potentia/routes.generated.js # internal/dev-only generation wrapper
 bun run pack:dry      # npm pack --dry-run --json
 ```

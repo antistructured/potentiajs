@@ -6,6 +6,41 @@ import { normalizePath } from './path-mapping.js';
 import { scanRouteTree } from './scanner.js';
 
 export async function generateFileRoutes(options = {}) {
+  const prepared = generateFileRouteSource(options);
+  if (!prepared.ok) return prepared;
+
+  const outputFile = prepared.outputFile;
+
+  const tempFile = `${outputFile}.tmp-${process.pid}-${Date.now()}`;
+
+  try {
+    await mkdir(path.posix.dirname(outputFile), { recursive: true });
+    await writeFile(tempFile, prepared.source);
+    await rename(tempFile, outputFile);
+  } catch (error) {
+    await rm(tempFile, { force: true }).catch(() => {});
+    return failureResult(prepared.rootDir, outputFile, [{
+      code: 'POTENTIA_FILE_ROUTE_WRITE_FAILED',
+      message: 'Failed to write generated route module',
+      outputFile: outputFile,
+      cause: error instanceof Error ? error.message : String(error)
+    }], prepared.routes, prepared.scopes);
+  }
+
+  return {
+    ok: true,
+    rootDir: prepared.rootDir,
+    outputFile: prepared.outputFile,
+    written: true,
+    source: prepared.source,
+    routes: prepared.routes,
+    scopes: prepared.scopes,
+    diagnostics: [],
+    errors: []
+  };
+}
+
+export function generateFileRouteSource(options = {}) {
   const rootDir = resolveOptionPath(options.rootDir, options.cwd);
   const outputFile = resolveOptionPath(options.outputFile, options.cwd);
 
@@ -30,27 +65,11 @@ export async function generateFileRoutes(options = {}) {
     return failureResult(rootDir, outputFile, generated.errors, scan.routes.length, scan.scopes.length);
   }
 
-  const tempFile = `${outputFile}.tmp-${process.pid}-${Date.now()}`;
-
-  try {
-    await mkdir(path.posix.dirname(outputFile), { recursive: true });
-    await writeFile(tempFile, generated.source);
-    await rename(tempFile, outputFile);
-  } catch (error) {
-    await rm(tempFile, { force: true }).catch(() => {});
-    return failureResult(rootDir, outputFile, [{
-      code: 'POTENTIA_FILE_ROUTE_WRITE_FAILED',
-      message: 'Failed to write generated route module',
-      outputFile: outputFile,
-      cause: error instanceof Error ? error.message : String(error)
-    }], scan.routes.length, scan.scopes.length);
-  }
-
   return {
     ok: true,
     rootDir: rootDir,
     outputFile: outputFile,
-    written: true,
+    written: false,
     source: generated.source,
     routes: scan.routes.length,
     scopes: scan.scopes.length,
