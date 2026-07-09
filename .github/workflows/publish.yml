@@ -28,6 +28,20 @@ jobs:
         with:
           node-version: "22"
           package-manager-cache: false
+
+      - name: Configure npm auth
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "${NODE_AUTH_TOKEN}"
+          npm config set registry https://registry.npmjs.org/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Show npm registry config
+        run: |
+          npm config get registry
+          npm config get //registry.npmjs.org/:_authToken
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
       - name: Verify npm auth
         run: npm whoami --registry https://registry.npmjs.org
