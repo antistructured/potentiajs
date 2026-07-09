@@ -3,9 +3,20 @@
   "version": "0.1.0-preview.0",
   "license": "MIT",
   "exports": {
-    ".": {
-      "types": "./src/index.d.ts",
-      "import": "./src/index.js"
-    }
-  }
+    ".": "./src/index.js",
+    "./file-routing": "./src/file-routing.js",
+    "./forms": "./src/forms.js"
+  },
+  "include": [
+    "src/**/*.js",
+    "src/**/*.d.ts",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "exclude": [
+    "docs/internal",
+    "tests",
+    "examples/**/.potentia"
+  ]
 }
