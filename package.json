@@ -8,10 +8,11 @@
   "module": "./src/index.js",
   "types": "./src/index.d.ts",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "tag": "preview"
   },
   "bin": {
-    "potentia": "./bin/potentia.js"
+    "potentia": "bin/potentia.js"
   },
   "exports": {
     ".": {

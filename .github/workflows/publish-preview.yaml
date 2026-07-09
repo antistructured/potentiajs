@@ -34,7 +34,9 @@ jobs:
         run: npm pack --dry-run --json
 
       - name: Verify npm publish dry-run
-        run: npm publish --dry-run --tag preview
+        run: npm publish --dry-run --tag preview --provenance=false
+        env:
+          NPM_CONFIG_PROVENANCE: "false"
 
       # Real publish is intentionally not enabled in this workflow.
       # To enable later, create a separate protected environment-gated job after
