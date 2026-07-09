@@ -2,7 +2,7 @@ import { rm } from 'node:fs/promises';
 
 import { describe, expect, test } from 'bun:test';
 
-import { generateFileRoutes } from '../src/dev/file-routing/index.js';
+import { generateFileRoutes } from '@potentiajs/core/file-routing';
 
 const routesRoot = new URL('../examples/file-routing-dev/routes/', import.meta.url).pathname;
 const generatedDir = new URL('../examples/file-routing-dev/.potentia/', import.meta.url);

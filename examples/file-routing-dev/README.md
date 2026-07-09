@@ -2,7 +2,7 @@
 
 This repo-only example demonstrates Potentia's file-routing projection workflow.
 
-The public preview API is the package subpath `@potentiajs/core/file-routing`, which exports `generateFileRoutes(...)`. This example still uses the repository's internal script wrapper for local development convenience; it is not a public CLI contract.
+The public preview API is the package subpath `@potentiajs/core/file-routing`, which exports `generateFileRoutes(...)`. The repository script used below calls that subpath API; it is local development convenience, not a public CLI contract.
 
 ## Shape
 

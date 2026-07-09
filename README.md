@@ -181,6 +181,8 @@ File routing remains projection over explicit route composition: generated modul
 
 See [`examples/file-routing-basic/`](examples/file-routing-basic/) for a runnable example.
 
+See [`examples/full-flow-basic/`](examples/full-flow-basic/) for a compact full-flow app combining file routing, actions, form projection, server-rendered forms, form state, and redirects.
+
 ## Effects
 
 Handlers and hooks may be plain functions, async functions, or experimental `effect(...)` descriptors. Effect helpers are small command constructors that keep generator workflows readable.
@@ -253,9 +255,28 @@ return fail(createFormState({
 }), 409);
 ```
 
-Potentia still does not include a form generator, frontend runtime, client SDK, OpenAPI generator, session/flash helper, or multipart/file upload helper.
+Potentia also includes an experimental optional server-side HTML string renderer on the forms subpath. Rendering is metadata-driven, escaped by default, and state-aware. It does not add a frontend runtime, JSX, hydration, custom renderer system, client SDK, OpenAPI generator, session/flash helper, or multipart/file upload helper.
 
-`projectForm(...)` is an experimental metadata-only helper. It projects action input contracts into renderer-independent field metadata where safe. SigilJS object contracts can expose field paths, derived labels, conservative input hints, required/optional flags, scalar-array `multiple` hints, and sensitive flags. Generic function/parse/check contracts remain opaque and do not invent fields. Server validation remains authoritative. Potentia still does not include a form renderer, HTML generator, frontend runtime, client SDK, or OpenAPI generator.
+```js
+import { createFormState, projectForm } from '@potentiajs/core';
+import { renderForm } from '@potentiajs/core/forms';
+
+const formProjection = projectForm(createUser);
+const formState = createFormState({
+  ok: false,
+  values: ctx.input,
+  error: { code: 'USER_EMAIL_TAKEN', message: 'Email is already in use' }
+});
+
+const html = renderForm(formProjection, {
+  action: '/users',
+  state: formState
+});
+```
+
+`renderForm(...)` returns a plain HTML string. It renders projected fields, preserves safe state values, omits sensitive values, and renders root/field errors. It supports explicit textarea and hidden metadata, finite options as `<select>`, stable `data-potentia-*` styling/testing hooks, and baseline accessibility attributes. Server validation remains authoritative. The renderer is intentionally exported from `@potentiajs/core/forms`, not the package root.
+
+`projectForm(...)` is an experimental metadata-only helper. It projects action input contracts into renderer-independent field metadata where safe. SigilJS object contracts can expose field paths, derived labels, conservative input hints, required/optional flags, scalar-array `multiple` hints, and sensitive flags. Generic function/parse/check contracts remain opaque and do not invent fields. Server validation remains authoritative.
 
 ## Hooks
 
@@ -329,7 +350,9 @@ Unsafe thrown handler errors return `POTENTIA_HANDLER_FAILED` with `Internal ser
 - [`examples/composed-basic/`](examples/composed-basic/) — explicit route composition smoke app.
 - [`examples/action-basic/`](examples/action-basic/) — experimental JSON and URL-encoded action smoke app.
 - [`examples/form-state-basic/`](examples/form-state-basic/) — opt-in safe form state helper smoke app.
+- [`examples/form-rendering-basic/`](examples/form-rendering-basic/) — server-rendered escaped form HTML smoke app.
 - [`examples/file-routing-basic/`](examples/file-routing-basic/) — experimental file-route generation smoke app.
+- [`examples/full-flow-basic/`](examples/full-flow-basic/) — file routing + actions + form projection + server-rendered forms.
 
 Each example exports `app` for smoke tests and only starts `Bun.serve()` when run directly.
 

@@ -21,6 +21,10 @@
     "./file-routing": {
       "types": "./src/file-routing.d.ts",
       "import": "./src/file-routing.js"
+    },
+    "./forms": {
+      "types": "./src/forms.d.ts",
+      "import": "./src/forms.js"
     }
   },
   "files": [
@@ -30,6 +34,8 @@
     "src/index.d.ts",
     "src/file-routing.js",
     "src/file-routing.d.ts",
+    "src/forms.js",
+    "src/forms.d.ts",
     "src/kernel/",
     "src/dev/file-routing/",
     "examples/kernel-basic/",
@@ -37,7 +43,9 @@
     "examples/composed-basic/",
     "examples/action-basic/",
     "examples/form-state-basic/",
+    "examples/form-rendering-basic/",
     "examples/file-routing-basic/",
+    "examples/full-flow-basic/",
     "CHANGELOG.md",
     "README.md"
   ],

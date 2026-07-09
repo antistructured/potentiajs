@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { generateFileRoutes } from '../src/dev/file-routing/index.js';
+import { generateFileRoutes } from '@potentiajs/core/file-routing';
 
 const options = parseArgs(process.argv.slice(2));
 
