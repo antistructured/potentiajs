@@ -39,7 +39,6 @@ jobs:
       - name: Show npm registry config
         run: |
           npm config get registry
-          npm config get //registry.npmjs.org/:_authToken
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
