@@ -12,7 +12,7 @@
     "tag": "preview"
   },
   "bin": {
-    "potentia": "bin/potentia.js"
+    "potentia": "./bin/potentia.js"
   },
   "exports": {
     ".": {
@@ -29,26 +29,14 @@
     }
   },
   "files": [
-    "bin/potentia.js",
-    "src/cli.js",
-    "src/index.js",
-    "src/index.d.ts",
-    "src/file-routing.js",
-    "src/file-routing.d.ts",
-    "src/forms.js",
-    "src/forms.d.ts",
-    "src/kernel/",
-    "src/dev/file-routing/",
-    "examples/kernel-basic/",
-    "examples/sigiljs-basic/",
-    "examples/composed-basic/",
-    "examples/action-basic/",
-    "examples/form-state-basic/",
-    "examples/form-rendering-basic/",
+    "bin/",
+    "src/",
     "examples/file-routing-basic/",
     "examples/full-flow-basic/",
+    "examples/form-rendering-basic/",
+    "README.md",
     "CHANGELOG.md",
-    "README.md"
+    "LICENSE"
   ],
   "scripts": {
     "test": "bun test",
