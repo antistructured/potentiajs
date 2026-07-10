@@ -37,11 +37,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Show npm registry config
-        run: |
-          npm config get registry
+        run: npm config get registry
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
+
       - name: Verify npm auth
         run: npm whoami --registry https://registry.npmjs.org
         env:
@@ -87,6 +86,18 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
 
+      - name: Configure npm auth
+        run: |
+          npm config set //registry.npmjs.org/:_authToken "${NODE_AUTH_TOKEN}"
+          npm config set registry https://registry.npmjs.org/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Verify npm auth
+        run: npm whoami --registry https://registry.npmjs.org
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -116,7 +127,7 @@ jobs:
 
           if npm view "$NAME@$VERSION" version --registry=https://registry.npmjs.org > /dev/null 2>&1; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "$NAME@$VERSION already exists on npm. Skipping npm publish."
+            echo "$NAME@$VERSION already exists on npm."
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
             echo "$NAME@$VERSION does not exist on npm. Publishing is allowed."
@@ -129,28 +140,57 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "false"
 
+      - name: Ensure npm preview dist-tag
+        shell: bash
+        run: |
+          NAME="${{ steps.package.outputs.name }}"
+          VERSION="${{ steps.package.outputs.version }}"
+
+          echo "Ensuring npm preview tag points to $NAME@$VERSION"
+
+          npm dist-tag add "$NAME@$VERSION" preview --registry=https://registry.npmjs.org
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Verify npm preview dist-tag
         shell: bash
         run: |
           NAME="${{ steps.package.outputs.name }}"
           VERSION="${{ steps.package.outputs.version }}"
 
-          DIST_TAGS="$(npm view "$NAME" dist-tags --json --registry=https://registry.npmjs.org)"
-          PREVIEW_VERSION="$(npm view "$NAME@preview" version --registry=https://registry.npmjs.org)"
-          LATEST_VERSION="$(node -e "const tags = JSON.parse(process.argv[1]); console.log(tags.latest || '')" "$DIST_TAGS")"
+          echo "Expected package: $NAME"
+          echo "Expected version: $VERSION"
 
-          echo "npm dist-tags: $DIST_TAGS"
-          echo "npm preview: $PREVIEW_VERSION"
-          echo "npm latest: ${LATEST_VERSION:-<none>}"
+          for attempt in 1 2 3 4 5 6; do
+            echo "npm preview verification attempt $attempt..."
 
-          if [ "$PREVIEW_VERSION" != "$VERSION" ]; then
-            echo "npm preview tag ($PREVIEW_VERSION) does not match package version ($VERSION)"
-            exit 1
-          fi
+            EXACT_VERSION="$(npm view "$NAME@$VERSION" version --registry=https://registry.npmjs.org 2>/dev/null || true)"
+            DIST_TAGS="$(npm view "$NAME" dist-tags --json --registry=https://registry.npmjs.org 2>/dev/null || echo '{}')"
+            PREVIEW_VERSION="$(npm view "$NAME@preview" version --registry=https://registry.npmjs.org 2>/dev/null || true)"
+            LATEST_VERSION="$(node -e "const tags = JSON.parse(process.argv[1]); console.log(tags.latest || '')" "$DIST_TAGS")"
 
-          if [ "$LATEST_VERSION" = "$VERSION" ]; then
-            echo "Note: npm latest currently points to the preview version. This is recorded but not failed during the preview era."
-          fi
+            echo "npm exact: ${EXACT_VERSION:-<missing>}"
+            echo "npm dist-tags: $DIST_TAGS"
+            echo "npm preview: ${PREVIEW_VERSION:-<missing>}"
+            echo "npm latest: ${LATEST_VERSION:-<none>}"
+
+            if [ "$EXACT_VERSION" = "$VERSION" ] && [ "$PREVIEW_VERSION" = "$VERSION" ]; then
+              echo "npm preview tag verified."
+
+              if [ "$LATEST_VERSION" = "$VERSION" ]; then
+                echo "Note: npm latest currently points to the preview version. This is recorded but not failed during the preview era."
+              fi
+
+              exit 0
+            fi
+
+            sleep 10
+          done
+
+          echo "npm preview tag did not resolve to expected version after retries."
+          echo "Expected: $VERSION"
+          echo "Actual preview: ${PREVIEW_VERSION:-<missing>}"
+          exit 1
 
   publish-jsr:
     name: Publish to JSR
@@ -188,5 +228,27 @@ jobs:
 
           echo "JSR package: $NAME@$VERSION"
 
+      - name: Check whether JSR version already exists
+        id: jsr_version
+        shell: bash
+        run: |
+          NAME="${{ steps.jsr.outputs.name }}"
+          VERSION="${{ steps.jsr.outputs.version }}"
+
+          SCOPE="${NAME%%/*}"
+          PACKAGE="${NAME#*/}"
+          SCOPE="${SCOPE#@}"
+
+          URL="https://jsr.io/@${SCOPE}/${PACKAGE}/${VERSION}_meta.json"
+
+          if curl -fsSL "$URL" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION already exists on JSR. Skipping JSR publish."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION does not exist on JSR. Publishing is allowed."
+          fi
+
       - name: Publish to JSR
+        if: steps.jsr_version.outputs.exists == 'false'
         run: npx jsr publish
