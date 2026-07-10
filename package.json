@@ -1,6 +1,6 @@
 {
   "name": "@potentiajs/core",
-  "version": "0.1.0-preview.1",
+  "version": "0.1.0",
   "private": false,
   "description": "JavaScript framework kernel for contract-driven routing, actions, and form metadata.",
   "type": "module",
@@ -8,8 +8,7 @@
   "module": "./src/index.js",
   "types": "./src/index.d.ts",
   "publishConfig": {
-    "access": "public",
-    "tag": "preview"
+    "access": "public"
   },
   "bin": {
     "potentia": "./bin/potentia.js"

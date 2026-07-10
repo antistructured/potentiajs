@@ -112,11 +112,18 @@ jobs:
         run: |
           NAME="$(node -p "require('./package.json').name")"
           VERSION="$(node -p "require('./package.json').version")"
+          if [[ "$VERSION" == *"-preview."* ]]; then
+            TAG="preview"
+          else
+            TAG="latest"
+          fi
 
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
           echo "Package: $NAME@$VERSION"
+          echo "npm tag: $TAG"
 
       - name: Check whether npm version already exists
         id: npm_version
@@ -135,49 +142,39 @@ jobs:
 
       - name: Publish to npm
         if: steps.npm_version.outputs.exists == 'false'
-        run: npm publish --access public --tag preview --provenance=false
+        run: npm publish --access public --tag "${{ steps.package.outputs.tag }}" --provenance=false
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "false"
 
-      - name: Ensure npm preview dist-tag
+      - name: Verify npm dist-tag
         shell: bash
         run: |
           NAME="${{ steps.package.outputs.name }}"
           VERSION="${{ steps.package.outputs.version }}"
-
-          echo "Ensuring npm preview tag points to $NAME@$VERSION"
-
-          npm dist-tag add "$NAME@$VERSION" preview --registry=https://registry.npmjs.org
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Verify npm preview dist-tag
-        shell: bash
-        run: |
-          NAME="${{ steps.package.outputs.name }}"
-          VERSION="${{ steps.package.outputs.version }}"
+          TAG="${{ steps.package.outputs.tag }}"
 
           echo "Expected package: $NAME"
           echo "Expected version: $VERSION"
+          echo "Expected npm tag: $TAG"
 
           for attempt in 1 2 3 4 5 6; do
-            echo "npm preview verification attempt $attempt..."
+            echo "npm $TAG verification attempt $attempt..."
 
             EXACT_VERSION="$(npm view "$NAME@$VERSION" version --registry=https://registry.npmjs.org 2>/dev/null || true)"
             DIST_TAGS="$(npm view "$NAME" dist-tags --json --registry=https://registry.npmjs.org 2>/dev/null || echo '{}')"
-            PREVIEW_VERSION="$(npm view "$NAME@preview" version --registry=https://registry.npmjs.org 2>/dev/null || true)"
+            TAG_VERSION="$(npm view "$NAME@$TAG" version --registry=https://registry.npmjs.org 2>/dev/null || true)"
             LATEST_VERSION="$(node -e "const tags = JSON.parse(process.argv[1]); console.log(tags.latest || '')" "$DIST_TAGS")"
 
             echo "npm exact: ${EXACT_VERSION:-<missing>}"
             echo "npm dist-tags: $DIST_TAGS"
-            echo "npm preview: ${PREVIEW_VERSION:-<missing>}"
+            echo "npm $TAG: ${TAG_VERSION:-<missing>}"
             echo "npm latest: ${LATEST_VERSION:-<none>}"
 
-            if [ "$EXACT_VERSION" = "$VERSION" ] && [ "$PREVIEW_VERSION" = "$VERSION" ]; then
-              echo "npm preview tag verified."
+            if [ "$EXACT_VERSION" = "$VERSION" ] && [ "$TAG_VERSION" = "$VERSION" ]; then
+              echo "npm $TAG tag verified."
 
-              if [ "$LATEST_VERSION" = "$VERSION" ]; then
+              if [ "$TAG" = "preview" ] && [ "$LATEST_VERSION" = "$VERSION" ]; then
                 echo "Note: npm latest currently points to the preview version. This is recorded but not failed during the preview era."
               fi
 
@@ -187,9 +184,9 @@ jobs:
             sleep 10
           done
 
-          echo "npm preview tag did not resolve to expected version after retries."
+          echo "npm $TAG tag did not resolve to expected version after retries."
           echo "Expected: $VERSION"
-          echo "Actual preview: ${PREVIEW_VERSION:-<missing>}"
+          echo "Actual $TAG: ${TAG_VERSION:-<missing>}"
           exit 1
 
   publish-jsr:

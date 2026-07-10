@@ -1,14 +1,14 @@
 # PotentiaJS
 
-PotentiaJS is an experimental Bun-first JavaScript framework kernel for explicit, contract-driven request handling.
+PotentiaJS is an experimental, contract-driven JavaScript framework kernel for building server-first applications with explicit routing, actions, form metadata, and file-routing projection.
 
-It is **not production-ready** and has **no stable public API** yet.
+`0.1.0` is the first serious public foundation under ZeroVer. PotentiaJS is usable and externally installable, but it is **not production-ready**, **not a 1.0 stability guarantee**, and still has **no permanent public API** commitment.
 
 ## Current status
 
 - Package: `@potentiajs/core`
-- Version: `0.1.0-preview.1`
-- Visibility: public preview package candidate
+- Version: `0.1.0`
+- Visibility: first public ZeroVer foundation
 - License: MIT
 - Runtime: Bun
 - Source: plain JavaScript ES modules
@@ -24,7 +24,13 @@ Request → Route Match → Contract Boundary → Effect Execution → Result No
 
 ## Install / local usage
 
-Once registry visibility is confirmed, the preview package install shape is:
+Install from npm:
+
+```bash
+npm install @potentiajs/core
+```
+
+With Bun:
 
 ```bash
 bun add @potentiajs/core
@@ -39,7 +45,7 @@ bun run check
 bun run check:preview
 ```
 
-If the registry install command fails, check the post-release verification notes: the registry artifact may not be visible yet even though release metadata is prepared.
+The package is published as `@potentiajs/core` on npm and JSR.
 
 ## Minimal route
 
@@ -212,7 +218,7 @@ import { createRouteManifest, projectContract, projectRoute, projectRoutes } fro
 const contract = projectContract(UserResponse);
 const single = projectRoute(route('GET', '/users/:id', handler, { response: UserResponse }));
 const collection = projectRoutes(app);
-const manifest = createRouteManifest(app, { packageName: '@potentiajs/core', packageVersion: '0.1.0-preview.0' });
+const manifest = createRouteManifest(app, { packageName: '@potentiajs/core', packageVersion: '0.1.0' });
 ```
 
 `projectContract()` reports honest metadata such as capability, opacity, schema, field summaries, required fields, and optional fields. Generic function/parse/check contracts remain opaque. SigilJS contracts expose richer metadata only where SigilJS safely provides it.
@@ -255,7 +261,7 @@ return fail(createFormState({
 }), 409);
 ```
 
-Potentia also includes an experimental optional server-side HTML string renderer on the forms subpath. Rendering is metadata-driven, escaped by default, and state-aware. It does not add a frontend runtime, JSX, hydration, custom renderer system, client SDK, OpenAPI generator, session/flash helper, or multipart/file upload helper.
+Potentia is HTML-first and server-first. It includes an experimental optional server-side HTML string renderer on the forms subpath. Rendering is metadata-driven, escaped by default, and state-aware. It does not add a frontend runtime, JSX, hydration, custom renderer system, client SDK, OpenAPI generator, session/flash helper, or multipart/file upload helper. JSX is intentionally not part of the official framework direction.
 
 ```js
 import { createFormState, projectForm } from '@potentiajs/core';
@@ -362,7 +368,7 @@ Each example exports `app` for smoke tests and only starts `Bun.serve()` when ru
 bun run test          # test suite
 bun run check         # current local check
 bun run check:preview # tests + check + npm pack dry-run
-bun run check:release # preview release check alias
+bun run check:release # release gate alias
 bun run check:file-routing # internal file-routing projection tests
 potentia routes generate # experimental file-route generation CLI after package install/link
 potentia routes check # verify generated file-route output is current without writing
@@ -374,8 +380,8 @@ bun run pack:dry      # npm pack --dry-run --json
 
 Deferred intentionally:
 
-- stable public APIs
-- registry visibility may lag or require release verification
+- stable 1.0 public APIs
+- production-readiness guarantee
 - stable public file-based routing API and route auto-discovery beyond the experimental `@potentiajs/core/file-routing` generation subpath
 - nested layout routing
 - frontend rendering and hydration
@@ -413,20 +419,21 @@ Lower-level implementation helpers such as request-context construction, effect 
 Experimental package subpaths:
 
 - file routing generation: `@potentiajs/core/file-routing` exports `generateFileRoutes`
+- form rendering: `@potentiajs/core/forms` exports `renderForm`
 
 ## Release / publish status
 
-Prepared for public preview dry-run verification:
+Prepared as the first public ZeroVer foundation:
 
-- package metadata targets `@potentiajs/core@0.1.0-preview.0`
+- package metadata targets `@potentiajs/core@0.1.0`
 - license is MIT
 - repository metadata targets `https://github.com/antistructured/potentiajs`
 - package is configured as public
 - `CHANGELOG.md` and conservative declarations are included
-- no public API is stable
-- registry visibility is verified during post-release checks
+- no 1.0 stability guarantee is implied
+- npm and JSR registry publication should be verified after release
 
-Post-release verification should confirm the registry package is visible before sharing install instructions widely.
+Post-release verification should confirm npm and JSR registry visibility after the publish workflow completes.
 
 ## License
 
