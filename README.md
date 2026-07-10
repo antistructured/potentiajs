@@ -7,7 +7,7 @@ It is **not production-ready** and has **no stable public API** yet.
 ## Current status
 
 - Package: `@potentiajs/core`
-- Version: `0.1.0-preview.0`
+- Version: `0.1.0-preview.1`
 - Visibility: public preview package candidate
 - License: MIT
 - Runtime: Bun

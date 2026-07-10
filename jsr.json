@@ -1,22 +1,32 @@
 {
   "name": "@potentiajs/core",
-  "version": "0.1.0-preview.0",
+  "version": "0.1.0-preview.1",
   "license": "MIT",
   "exports": {
     ".": "./src/index.js",
     "./file-routing": "./src/file-routing.js",
     "./forms": "./src/forms.js"
   },
-  "include": [
-    "src/**/*.js",
-    "src/**/*.d.ts",
-    "README.md",
-    "LICENSE",
-    "package.json"
-  ],
-  "exclude": [
-    "docs/internal",
-    "tests",
-    "examples/**/.potentia"
-  ]
+  "publish": {
+    "include": [
+      "src/**/*.js",
+      "src/**/*.d.ts",
+      "README.md",
+      "LICENSE",
+      "package.json"
+    ],
+    "exclude": [
+      ".github",
+      "docs",
+      "tests",
+      "examples",
+      "plugins",
+      "scripts",
+      "cli",
+      ".potentia",
+      "bun.lock",
+      "*.mjs",
+      "*.view"
+    ]
+  }
 }

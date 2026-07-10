@@ -111,6 +111,29 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "false"
 
+      - name: Verify npm preview dist-tag
+        shell: bash
+        run: |
+          NAME="${{ steps.package.outputs.name }}"
+          VERSION="${{ steps.package.outputs.version }}"
+
+          DIST_TAGS="$(npm view "$NAME" dist-tags --json --registry=https://registry.npmjs.org)"
+          PREVIEW_VERSION="$(npm view "$NAME@preview" version --registry=https://registry.npmjs.org)"
+          LATEST_VERSION="$(node -e "const tags = JSON.parse(process.argv[1]); console.log(tags.latest || '')" "$DIST_TAGS")"
+
+          echo "npm dist-tags: $DIST_TAGS"
+          echo "npm preview: $PREVIEW_VERSION"
+          echo "npm latest: ${LATEST_VERSION:-<none>}"
+
+          if [ "$PREVIEW_VERSION" != "$VERSION" ]; then
+            echo "npm preview tag ($PREVIEW_VERSION) does not match package version ($VERSION)"
+            exit 1
+          fi
+
+          if [ "$LATEST_VERSION" = "$VERSION" ]; then
+            echo "Note: npm latest currently points to the preview version. This is recorded but not failed during the preview era."
+          fi
+
   publish-jsr:
     name: Publish to JSR
     runs-on: ubuntu-latest

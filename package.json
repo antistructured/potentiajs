@@ -1,8 +1,8 @@
 {
   "name": "@potentiajs/core",
-  "version": "0.1.0-preview.0",
+  "version": "0.1.0-preview.1",
   "private": false,
-  "description": "Experimental Bun-first JavaScript framework kernel for contract-driven routing, actions, and form metadata.",
+  "description": "JavaScript framework kernel for contract-driven routing, actions, and form metadata.",
   "type": "module",
   "main": "./src/index.js",
   "module": "./src/index.js",

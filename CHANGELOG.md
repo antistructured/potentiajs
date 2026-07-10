@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0-preview.1
+
+### Registry hygiene
+
+- Tightened the JSR artifact to exclude repo-only files.
+- Preserved public JSR exports for root, file-routing, and forms.
+- Added npm preview dist-tag verification posture.
+- Preserved internal post-publish verification docs as project audit trail.
+
 ## 0.1.0-preview.0
 
 Experimental public preview for `@potentiajs/core`.
