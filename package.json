@@ -1,6 +1,6 @@
 {
   "name": "@potentiajs/core",
-  "version": "0.1.0",
+  "version": "0.2.0-preview.0",
   "private": false,
   "description": "JavaScript framework kernel for contract-driven routing, actions, and form metadata.",
   "type": "module",
@@ -25,6 +25,10 @@
     "./forms": {
       "types": "./src/forms.d.ts",
       "import": "./src/forms.js"
+    },
+    "./html": {
+      "types": "./src/html.d.ts",
+      "import": "./src/html.js"
     }
   },
   "files": [
@@ -33,6 +37,7 @@
     "examples/file-routing-basic/",
     "examples/full-flow-basic/",
     "examples/form-rendering-basic/",
+    "examples/html-basic/",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"

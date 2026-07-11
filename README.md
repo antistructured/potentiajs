@@ -4,13 +4,13 @@ PotentiaJS is an experimental, contract-driven JavaScript framework kernel for b
 
 <img src="assets/images/potentiajs-full-banner.png" alt="PotentiaJS – Contract-Driven Application Kernel" width="100%" height="auto">
 
-`0.1.0` is the first serious public foundation under ZeroVer. PotentiaJS is usable and externally installable, but it is **not production-ready**, **not a 1.0 stability guarantee**, and still has **no permanent public API** commitment.
+`0.2.0-preview.0` builds on the first serious public foundation with a preview HTML-first response layer. PotentiaJS is usable and externally installable, but it is **not production-ready**, **not a 1.0 stability guarantee**, and still has **no permanent public API** commitment.
 
 ## Current status
 
 - Package: `@potentiajs/core`
-- Version: `0.1.0`
-- Visibility: first public foundation
+- Version: `0.2.0-preview.0`
+- Visibility: HTML-first response foundation preview
 - License: MIT
 - Runtime: Bun-first/Node
 - Source: plain JavaScript ES modules
@@ -62,6 +62,33 @@ const app = createApp({
 
 Bun.serve({ fetch: app.fetch });
 ```
+
+## HTML-first responses
+
+PotentiaJS includes experimental HTML-first response helpers through the `@potentiajs/core/html` subpath. They are plain JavaScript helpers for server-rendered HTML responses — not JSX, not a compiler, not a virtual DOM, and not a client runtime.
+
+```js
+import { createApp, route } from '@potentiajs/core';
+import { attrs, fragment, html, htmlResponse, raw } from '@potentiajs/core/html';
+
+const app = createApp({
+  routes: [
+    route('GET', '/', () => htmlResponse(html`
+      <main${attrs({ class: ['page', 'home'] })}>
+        <h1>${raw('<span aria-hidden="true">★</span>')} Potentia</h1>
+        ${fragment(
+          html`<p>${'Escaped by default: <script>'}</p>`,
+          html`<p>Regular HTML, explicit trust boundaries.</p>`
+        )}
+      </main>
+    `))
+  ]
+});
+```
+
+Interpolated values escape by default. Use `raw(...)` only for trusted HTML. `htmlResponse(...)` returns a standard `Response` with `text/html; charset=utf-8` unless a content type is already provided.
+
+The HTML helpers are subpath-only in `0.2.0-preview.0`; they are not root exports.
 
 ## SigilJS contract route
 
@@ -220,7 +247,7 @@ import { createRouteManifest, projectContract, projectRoute, projectRoutes } fro
 const contract = projectContract(UserResponse);
 const single = projectRoute(route('GET', '/users/:id', handler, { response: UserResponse }));
 const collection = projectRoutes(app);
-const manifest = createRouteManifest(app, { packageName: '@potentiajs/core', packageVersion: '0.1.0' });
+const manifest = createRouteManifest(app, { packageName: '@potentiajs/core', packageVersion: '0.2.0-preview.0' });
 ```
 
 `projectContract()` reports honest metadata such as capability, opacity, schema, field summaries, required fields, and optional fields. Generic function/parse/check contracts remain opaque. SigilJS contracts expose richer metadata only where SigilJS safely provides it.
@@ -422,12 +449,13 @@ Experimental package subpaths:
 
 - file routing generation: `@potentiajs/core/file-routing` exports `generateFileRoutes`
 - form rendering: `@potentiajs/core/forms` exports `renderForm`
+- HTML-first responses: `@potentiajs/core/html` exports `html`, `raw`, `escapeHtml`, `attrs`, `fragment`, and `htmlResponse`
 
 ## Release / publish status
 
-Prepared as the first public ZeroVer foundation:
+Prepared as the first `0.2.0` preview capability expansion:
 
-- package metadata targets `@potentiajs/core@0.1.0`
+- package metadata targets `@potentiajs/core@0.2.0-preview.0`
 - license is MIT
 - repository metadata targets `https://github.com/antistructured/potentiajs`
 - package is configured as public

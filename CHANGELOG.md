@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.0-preview.0
+
+### HTML-first response foundation
+
+- Added `@potentiajs/core/html`.
+- Added safe HTML values and escaping helpers.
+- Added explicit trusted HTML through `raw(...)`.
+- Added tagged `html` templates.
+- Added `fragment(...)` composition.
+- Added `attrs(...)` for safe attribute rendering.
+- Added `htmlResponse(...)` for server-first HTML responses.
+- Added `examples/html-basic`.
+
+### Notes
+
+- HTML helpers are subpath-only in this preview.
+- JSX, compiler, hydration, virtual DOM, and client runtime behavior are intentionally out of scope.
+
 ## 0.1.0
 
 ### First public foundation

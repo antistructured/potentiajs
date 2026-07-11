@@ -1,11 +1,12 @@
 {
   "name": "@potentiajs/core",
-  "version": "0.1.0",
+  "version": "0.2.0-preview.0",
   "license": "MIT",
   "exports": {
     ".": "./src/index.js",
     "./file-routing": "./src/file-routing.js",
-    "./forms": "./src/forms.js"
+    "./forms": "./src/forms.js",
+    "./html": "./src/html.js"
   },
   "publish": {
     "include": [
