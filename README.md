@@ -2,15 +2,17 @@
 
 PotentiaJS is an experimental, contract-driven JavaScript framework kernel for building server-first applications with explicit routing, actions, form metadata, and file-routing projection.
 
+<img src="assets/images/potentiajs-full-banner.png" alt="PotentiaJS – Contract-Driven Application Kernel" width="100%" height="auto">
+
 `0.1.0` is the first serious public foundation under ZeroVer. PotentiaJS is usable and externally installable, but it is **not production-ready**, **not a 1.0 stability guarantee**, and still has **no permanent public API** commitment.
 
 ## Current status
 
 - Package: `@potentiajs/core`
 - Version: `0.1.0`
-- Visibility: first public ZeroVer foundation
+- Visibility: first public foundation
 - License: MIT
-- Runtime: Bun
+- Runtime: Bun-first/Node
 - Source: plain JavaScript ES modules
 - TypeScript source: none
 - Runtime dependency: `@weipertda/sigiljs@0.18.0`
@@ -444,5 +446,3 @@ See [`LICENSE`](LICENSE).
 ## Changelog
 
 See [`CHANGELOG.md`](CHANGELOG.md).
-
-
