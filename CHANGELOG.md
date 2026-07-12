@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.2.0
+
+### HTML-first response and page composition
+
+- Added the `@potentiajs/core/html` public subpath.
+- Added safe HTML values with escaping by default.
+- Added explicit trusted HTML through `raw(...)`.
+- Added tagged `html` templates.
+- Added `fragment(...)` for HTML composition.
+- Added `attrs(...)` for safe attribute rendering.
+- Added `htmlResponse(...)` for server-first HTML responses.
+- Added `page(...)` for HTML document shell composition.
+- Added `layout(...)` for reusable server-first layout functions.
+- Added `examples/html-basic`.
+- Updated `examples/full-flow-basic` to compose routing, actions, forms, and HTML page responses.
+
+### Notes
+
+- HTML helpers remain subpath-only through `@potentiajs/core/html`.
+- PotentiaJS remains experimental under ZeroVer.
+- JSX, compiler, hydration, virtual DOM, and client runtime behavior remain intentionally out of scope.
+
 ## 0.2.0-preview.1
 
 ### Page and layout integration

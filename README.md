@@ -4,13 +4,13 @@ PotentiaJS is an experimental, contract-driven JavaScript framework kernel for b
 
 <img src="assets/images/potentiajs-full-banner.png" alt="PotentiaJS – Contract-Driven Application Kernel" width="100%" height="auto">
 
-`0.2.0-preview.0` builds on the first serious public foundation with a preview HTML-first response layer. PotentiaJS is usable and externally installable, but it is **not production-ready**, **not a 1.0 stability guarantee**, and still has **no permanent public API** commitment.
+`0.2.0` builds on the first serious public foundation with an HTML-first response and page composition layer. PotentiaJS is usable and externally installable, but it is **not production-ready**, **not a 1.0 stability guarantee**, and still has **no permanent public API** commitment.
 
 ## Current status
 
 - Package: `@potentiajs/core`
-- Version: `0.2.0-preview.0`
-- Visibility: HTML-first response foundation preview
+- Version: `0.2.0`
+- Visibility: HTML-first response and page composition foundation
 - License: MIT
 - Runtime: Bun-first/Node
 - Source: plain JavaScript ES modules
@@ -96,7 +96,7 @@ const app = createApp({
 
 Interpolated values escape by default. Use `raw(...)` only for trusted HTML. `layout(...)` wraps reusable server-first page shells, `page(...)` composes a full HTML document shell, and `htmlResponse(...)` returns a standard `Response` with `text/html; charset=utf-8` unless a content type is already provided.
 
-The HTML helpers are subpath-only in `0.2.0-preview.1`; they are not root exports.
+The HTML helpers are subpath-only in `0.2.0`; they are not root exports.
 
 ## SigilJS contract route
 
@@ -255,7 +255,7 @@ import { createRouteManifest, projectContract, projectRoute, projectRoutes } fro
 const contract = projectContract(UserResponse);
 const single = projectRoute(route('GET', '/users/:id', handler, { response: UserResponse }));
 const collection = projectRoutes(app);
-const manifest = createRouteManifest(app, { packageName: '@potentiajs/core', packageVersion: '0.2.0-preview.0' });
+const manifest = createRouteManifest(app, { packageName: '@potentiajs/core', packageVersion: '0.2.0' });
 ```
 
 `projectContract()` reports honest metadata such as capability, opacity, schema, field summaries, required fields, and optional fields. Generic function/parse/check contracts remain opaque. SigilJS contracts expose richer metadata only where SigilJS safely provides it.
@@ -395,7 +395,8 @@ Unsafe thrown handler errors return `POTENTIA_HANDLER_FAILED` with `Internal ser
 - [`examples/form-state-basic/`](examples/form-state-basic/) — opt-in safe form state helper smoke app.
 - [`examples/form-rendering-basic/`](examples/form-rendering-basic/) — server-rendered escaped form HTML smoke app.
 - [`examples/file-routing-basic/`](examples/file-routing-basic/) — experimental file-route generation smoke app.
-- [`examples/full-flow-basic/`](examples/full-flow-basic/) — file routing + actions + form projection + server-rendered forms.
+- [`examples/html-basic/`](examples/html-basic/) — HTML-first responses with page/layout composition.
+- [`examples/full-flow-basic/`](examples/full-flow-basic/) — file routing + actions + form projection + page/layout HTML responses.
 
 Each example exports `app` for smoke tests and only starts `Bun.serve()` when run directly.
 
@@ -457,19 +458,19 @@ Experimental package subpaths:
 
 - file routing generation: `@potentiajs/core/file-routing` exports `generateFileRoutes`
 - form rendering: `@potentiajs/core/forms` exports `renderForm`
-- HTML-first responses: `@potentiajs/core/html` exports `html`, `raw`, `escapeHtml`, `attrs`, `fragment`, and `htmlResponse`
+- HTML-first responses: `@potentiajs/core/html` exports `html`, `raw`, `escapeHtml`, `attrs`, `fragment`, `htmlResponse`, `page`, and `layout`
 
 ## Release / publish status
 
-Prepared as the first `0.2.0` preview capability expansion:
+Prepared as the final `0.2.0` capability expansion:
 
-- package metadata targets `@potentiajs/core@0.2.0-preview.0`
+- package metadata targets `@potentiajs/core@0.2.0`
 - license is MIT
 - repository metadata targets `https://github.com/antistructured/potentiajs`
 - package is configured as public
 - `CHANGELOG.md` and conservative declarations are included
 - no 1.0 stability guarantee is implied
-- npm and JSR registry publication should be verified after release
+- npm `latest` and JSR registry publication should be verified after release
 
 Post-release verification should confirm npm and JSR registry visibility after the publish workflow completes.
 
