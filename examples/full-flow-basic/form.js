@@ -2,6 +2,7 @@ import { sigil } from '@weipertda/sigiljs';
 
 import { action, createFormState, projectForm, redirect } from '@potentiajs/core';
 import { renderForm } from '@potentiajs/core/forms';
+import { html, htmlResponse, layout, page, raw } from '@potentiajs/core/html';
 
 export const takenEmails = new Set(['taken@example.com']);
 
@@ -18,6 +19,13 @@ export const createUserAction = action('users.create.full-flow', () => null, {
 
 export const createUserForm = projectForm(createUserAction);
 
+const appLayout = layout(({ title, children }) => html`
+  <main>
+    <h1>${title}</h1>
+    ${children}
+  </main>
+`);
+
 export function renderCreateUserPage(options = {}) {
   const state = options.state || null;
   const status = options.status || 200;
@@ -28,20 +36,16 @@ export function renderCreateUserPage(options = {}) {
     idPrefix: 'create-user'
   });
 
-  return htmlResponse(`<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Create user · Potentia full flow</title>
-</head>
-<body>
-  <main>
-    <h1>Create a user account</h1>
-    <p>This page is rendered on the server from projected action metadata.</p>
-${indent(formHtml, 4)}
-  </main>
-</body>
-</html>`, status);
+  return htmlResponse(page({
+    title: 'Create user · Potentia full flow',
+    body: appLayout({
+      title: 'Create a user account',
+      children: html`
+        <p>This page is rendered on the server from projected action metadata.</p>
+        ${raw(formHtml)}
+      `
+    })
+  }), { status });
 }
 
 export async function handleCreateUser(request) {
@@ -81,37 +85,29 @@ export async function handleCreateUser(request) {
 }
 
 export function renderUserPage(id) {
-  return htmlResponse(`<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>User ${escapeHtml(id)} · Potentia full flow</title>
-</head>
-<body>
-  <main>
-    <h1>User ${escapeHtml(id)}</h1>
-    <p>The account flow completed with an explicit 303 redirect.</p>
-    <p><a href="/users/new">Create another user</a></p>
-  </main>
-</body>
-</html>`);
+  return htmlResponse(page({
+    title: html`User ${id} · Potentia full flow`,
+    body: appLayout({
+      title: html`User ${id}`,
+      children: html`
+        <p>The account flow completed with an explicit 303 redirect.</p>
+        <p><a href="/users/new">Create another user</a></p>
+      `
+    })
+  }));
 }
 
 export function renderHomePage() {
-  return htmlResponse(`<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Potentia full flow</title>
-</head>
-<body>
-  <main>
-    <h1>Potentia full-flow example</h1>
-    <p>File routes, actions, contracts, projected forms, rendered HTML, form state, and redirects.</p>
-    <p><a href="/users/new">Create a user account</a></p>
-  </main>
-</body>
-</html>`);
+  return htmlResponse(page({
+    title: 'Potentia full flow',
+    body: appLayout({
+      title: 'Potentia full-flow example',
+      children: html`
+        <p>File routes, actions, contracts, projected forms, rendered HTML, form state, and redirects.</p>
+        <p><a href="/users/new">Create a user account</a></p>
+      `
+    })
+  }));
 }
 
 function validateCreateUserInput(input) {
@@ -174,13 +170,6 @@ async function parseUrlEncoded(request) {
   };
 }
 
-function htmlResponse(html, status = 200) {
-  return new Response(html, {
-    status: status,
-    headers: { 'content-type': 'text/html; charset=utf-8' }
-  });
-}
-
 function slugify(value) {
   const slug = String(value || '')
     .trim()
@@ -190,16 +179,4 @@ function slugify(value) {
   return slug || 'user';
 }
 
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
 
-function indent(value, spaces) {
-  const padding = ' '.repeat(spaces);
-  return String(value).split('\n').map((line) => `${padding}${line}`).join('\n');
-}

@@ -12,7 +12,8 @@ file routes
 → URL-encoded POST
 → contract validation
 → form projection
-→ server-rendered HTML
+→ page/layout HTML composition
+→ server-rendered HTML response
 → form state after failure
 → explicit redirect after success
 ```
@@ -94,7 +95,9 @@ http://localhost:3000/users/new
 GET /users/new
 → projectForm(createUserAction)
 → renderForm(...)
-→ HTML response
+→ layout(...)
+→ page(...)
+→ htmlResponse(...)
 ```
 
 ### POST validation failure

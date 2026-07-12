@@ -69,26 +69,34 @@ PotentiaJS includes experimental HTML-first response helpers through the `@poten
 
 ```js
 import { createApp, route } from '@potentiajs/core';
-import { attrs, fragment, html, htmlResponse, raw } from '@potentiajs/core/html';
+import { attrs, fragment, html, htmlResponse, layout, page, raw } from '@potentiajs/core/html';
+
+const appLayout = layout(({ title, children }) => html`
+  <main${attrs({ class: ['page', 'home'] })}>
+    <h1>${raw('<span aria-hidden="true">★</span>')} ${title}</h1>
+    ${children}
+  </main>
+`);
 
 const app = createApp({
   routes: [
-    route('GET', '/', () => htmlResponse(html`
-      <main${attrs({ class: ['page', 'home'] })}>
-        <h1>${raw('<span aria-hidden="true">★</span>')} Potentia</h1>
-        ${fragment(
+    route('GET', '/', () => htmlResponse(page({
+      title: 'Potentia',
+      body: appLayout({
+        title: 'Potentia',
+        children: fragment(
           html`<p>${'Escaped by default: <script>'}</p>`,
           html`<p>Regular HTML, explicit trust boundaries.</p>`
-        )}
-      </main>
-    `))
+        )
+      })
+    })))
   ]
 });
 ```
 
-Interpolated values escape by default. Use `raw(...)` only for trusted HTML. `htmlResponse(...)` returns a standard `Response` with `text/html; charset=utf-8` unless a content type is already provided.
+Interpolated values escape by default. Use `raw(...)` only for trusted HTML. `layout(...)` wraps reusable server-first page shells, `page(...)` composes a full HTML document shell, and `htmlResponse(...)` returns a standard `Response` with `text/html; charset=utf-8` unless a content type is already provided.
 
-The HTML helpers are subpath-only in `0.2.0-preview.0`; they are not root exports.
+The HTML helpers are subpath-only in `0.2.0-preview.1`; they are not root exports.
 
 ## SigilJS contract route
 

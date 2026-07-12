@@ -1,6 +1,6 @@
 {
   "name": "@potentiajs/core",
-  "version": "0.2.0-preview.0",
+  "version": "0.2.0-preview.1",
   "private": false,
   "description": "JavaScript framework kernel for contract-driven routing, actions, and form metadata.",
   "type": "module",

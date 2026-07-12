@@ -1,6 +1,6 @@
 {
   "name": "@potentiajs/core",
-  "version": "0.2.0-preview.0",
+  "version": "0.2.0-preview.1",
   "license": "MIT",
   "exports": {
     ".": "./src/index.js",

@@ -82,6 +82,16 @@ export function fragment(...children) {
   return createHtmlValue(renderChildren(children));
 }
 
+export function layout(render) {
+  if (typeof render !== 'function') {
+    throw new TypeError('layout expects a render function.');
+  }
+
+  return function renderLayout(props = {}) {
+    return createHtmlValue(renderChild(render(props)));
+  };
+}
+
 export function attrs(attributes) {
   if (attributes === null || attributes === undefined) return createHtmlValue('');
   if (typeof attributes !== 'object' || Array.isArray(attributes)) {
@@ -117,6 +127,45 @@ export function htmlResponse(body = '', init = {}) {
     ...init,
     headers
   });
+}
+
+export function page(options = {}) {
+  if (options === null) options = {};
+  if (typeof options !== 'object' || Array.isArray(options)) {
+    throw new TypeError('page expects an options object.');
+  }
+
+  const {
+    title,
+    lang = 'en',
+    head,
+    body,
+    children,
+    htmlAttrs,
+    bodyAttrs
+  } = options;
+
+  const documentBody = Object.prototype.hasOwnProperty.call(options, 'body') ? body : children;
+  const headChildren = [
+    raw('<meta charset="utf-8">'),
+    raw('<meta name="viewport" content="width=device-width, initial-scale=1">')
+  ];
+
+  if (title !== null && title !== undefined) {
+    headChildren.push(html`<title>${title}</title>`);
+  }
+
+  headChildren.push(head);
+
+  return html`<!doctype html>
+<html${attrs({ ...(htmlAttrs || {}), lang: lang })}>
+  <head>
+    ${headChildren}
+  </head>
+  <body${attrs(bodyAttrs)}>
+    ${documentBody}
+  </body>
+</html>`;
 }
 
 function isTemplateStringsArray(value) {

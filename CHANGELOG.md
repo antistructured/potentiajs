@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.0-preview.1
+
+### Page and layout integration
+
+- Added `page(...)` for HTML document shell composition.
+- Added `layout(...)` for reusable server-first layout functions.
+- Updated `examples/html-basic` to demonstrate page/layout composition.
+- Updated `examples/full-flow-basic` to compose routing, actions, forms, and HTML page responses.
+
+### Notes
+
+- Page/layout helpers remain subpath-only through `@potentiajs/core/html`.
+- JSX, compiler, hydration, virtual DOM, and client runtime behavior remain intentionally out of scope.
+
 ## 0.2.0-preview.0
 
 ### HTML-first response foundation
